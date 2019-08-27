@@ -29,6 +29,10 @@ MSVC/.vs/*
 MSVC/Kuplung.dir/*
 MSVC/Release/*
 
+# VS 2019
+.vs
+x64
+
 # VSCode
 .vscode
 
