@@ -3,11 +3,13 @@
 #include "../utilities/imgui/imgui.h"
 #include "../utilities/imgui/imgui_impl_sdl.h"
 #include "../utilities/imgui/imgui_impl_vulkan.h"
+#ifdef _WIN32
 #include <tchar.h>
+#endif
 #include <memory>
 #include <string>
 
-#include "Components/Log.h"
+#include "components/Log.h"
 
 class UIManager {
 public: 

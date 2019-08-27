@@ -5,14 +5,14 @@
 #define VK_USE_PLATFORM_XLIB_KHR
 #elif defined(_WIN32)
 #define VK_USE_PLATFORM_WIN32_KHR
+#define WIN32_LEAN_AND_MEAN
+// Windows Header Files
+#include <windows.h>
+#include <shlobj.h>
 #endif
 
 // Tell SDL not to mess with main()
 #define SDL_MAIN_HANDLED
-
-#define WIN32_LEAN_AND_MEAN
-// Windows Header Files
-#include <windows.h>
 
 #include <glm/glm.hpp>
 #include <SDL2/SDL.h>
@@ -28,10 +28,14 @@
 #include <vector>
 #include <stdio.h>
 #include <stdlib.h>
-#include <shlobj.h>
 
+#ifdef _WIN32
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
+#elif defined(__APPLE__)
+#include <CoreFoundation/CoreFoundation.h>
+#include <boost/algorithm/string/replace.hpp>
+#endif
 
 #ifdef _DEBUG
 #define IMGUI_VULKAN_DEBUG_REPORT
@@ -56,57 +60,79 @@ static int g_SwapChainResizeWidth = 0;
 static int g_SwapChainResizeHeight = 0;
 
 void initFolders() {
-	std::string homeFolder(""), iniFolder("");
+  std::string homeFolder(""), iniFolder("");
+#ifdef _WIN32
+  char const* hdrive = getenv("HOMEDRIVE");
+  char const* hpath = getenv("HOMEPATH");
+  homeFolder = std::string(hdrive) + std::string(hpath);
 
-	char const* hdrive = getenv("HOMEDRIVE");
-	char const* hpath = getenv("HOMEPATH");
-	homeFolder = std::string(hdrive) + std::string(hpath);
+  TCHAR szPath[MAX_PATH];
+  if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, szPath))) {
+    std::string folderLocalAppData("");
+#  ifndef UNICODE
+    folderLocalAppData = szPath;
+#  else
+    std::wstring folderLocalAppDataW = szPath;
+    folderLocalAppData = std::string(folderLocalAppDataW.begin(), folderLocalAppDataW.end());
+#  endif
+    //std::string folderLocalAppData(szPath);
+    folderLocalAppData += "\\supudo.net";
+    if (!boost::filesystem::exists(folderLocalAppData))
+      boost::filesystem::create_directory(folderLocalAppData);
+    folderLocalAppData += "\\KuplungVK";
+    if (!boost::filesystem::exists(folderLocalAppData))
+      boost::filesystem::create_directory(folderLocalAppData);
 
-	TCHAR szPath[MAX_PATH];
-	if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, szPath))) {
-		std::string folderLocalAppData("");
-#ifndef UNICODE
-		folderLocalAppData = szPath;
+    std::string current_folder = boost::filesystem::current_path().string() + "\\resources";
+    std::string fName("");
+
+    fName = "KuplungVK_Settings.ini";
+    std::string iniFileSource(current_folder + "\\" + fName);
+    std::string iniFileDestination = folderLocalAppData + "\\" + fName;
+    if (!boost::filesystem::exists(iniFileDestination))
+      boost::filesystem::copy(iniFileSource, iniFileDestination);
+
+    fName = "KuplungVK_RecentFiles.ini";
+    std::string iniFileRecentSource(current_folder + "\\" + fName);
+    std::string iniFileRecentDestination = folderLocalAppData + "\\" + fName;
+    if (!boost::filesystem::exists(iniFileRecentDestination))
+      boost::filesystem::copy(iniFileRecentSource, iniFileRecentDestination);
+
+    fName = "KuplungVK_RecentFilesImported.ini";
+    std::string iniFileRecentImportedSource(current_folder + "\\" + fName);
+    std::string iniFileRecentImportedDestination = folderLocalAppData + "\\" + fName;
+    if (!boost::filesystem::exists(iniFileRecentImportedDestination))
+      boost::filesystem::copy(iniFileRecentImportedSource, iniFileRecentImportedDestination);
+
+    iniFolder = folderLocalAppData;
+  }
+  else
+    iniFolder = homeFolder;
+#elif defined macintosh // OS 9
+  char const* hpath = getenv("HOME");
+  homeFolder = std::string(hpath);
+  iniFolder = homeFolder;
 #else
-		std::wstring folderLocalAppDataW = szPath;
-		folderLocalAppData = std::string(folderLocalAppDataW.begin(), folderLocalAppDataW.end());
+  char const* hpath = getenv("HOME");
+  if (hpath != NULL)
+    homeFolder = std::string(hpath);
+  iniFolder = homeFolder;
+  CFURLRef appUrlRef;
+  appUrlRef = CFBundleCopyResourceURL(CFBundleGetMainBundle(), CFSTR("KuplungVK_Settings.ini"), NULL, NULL);
+  CFStringRef filePathRef = CFURLCopyPath(appUrlRef);
+  const char* filePath = CFStringGetCStringPtr(filePathRef, kCFStringEncodingUTF8);
+  iniFolder = std::string(filePath);
+  homeFolder = std::string(filePath);
+  boost::replace_all(iniFolder, "KuplungVK_Settings.ini", "");
+  boost::replace_all(homeFolder, "KuplungVK_Settings.ini", "");
+  CFRelease(filePathRef);
+  CFRelease(appUrlRef);
 #endif
-		//std::string folderLocalAppData(szPath);
-		folderLocalAppData += "\\supudo.net";
-		if (!boost::filesystem::exists(folderLocalAppData))
-			boost::filesystem::create_directory(folderLocalAppData);
-		folderLocalAppData += "\\Kuplung";
-		if (!boost::filesystem::exists(folderLocalAppData))
-			boost::filesystem::create_directory(folderLocalAppData);
-
-		std::string current_folder = boost::filesystem::current_path().string() + "\\resources";
-		std::string fName("");
-
-		fName = "Kuplung_Settings.ini";
-		std::string iniFileSource(current_folder + "\\" + fName);
-		std::string iniFileDestination = folderLocalAppData + "\\" + fName;
-		if (!boost::filesystem::exists(iniFileDestination))
-			boost::filesystem::copy(iniFileSource, iniFileDestination);
-
-		fName = "Kuplung_RecentFiles.ini";
-		std::string iniFileRecentSource(current_folder + "\\" + fName);
-		std::string iniFileRecentDestination = folderLocalAppData + "\\" + fName;
-		if (!boost::filesystem::exists(iniFileRecentDestination))
-			boost::filesystem::copy(iniFileRecentSource, iniFileRecentDestination);
-
-		fName = "Kuplung_RecentFilesImported.ini";
-		std::string iniFileRecentImportedSource(current_folder + "\\" + fName);
-		std::string iniFileRecentImportedDestination = folderLocalAppData + "\\" + fName;
-		if (!boost::filesystem::exists(iniFileRecentImportedDestination))
-			boost::filesystem::copy(iniFileRecentImportedSource, iniFileRecentImportedDestination);
-
-		iniFolder = folderLocalAppData;
-	}
-	if (Settings::Instance()->ApplicationConfigurationFolder.empty())
-		Settings::Instance()->ApplicationConfigurationFolder = iniFolder;
-	if (Settings::Instance()->currentFolder.empty())
-		Settings::Instance()->currentFolder = homeFolder;
-	Settings::Instance()->initSettings(iniFolder);
+  if (Settings::Instance()->ApplicationConfigurationFolder.empty())
+    Settings::Instance()->ApplicationConfigurationFolder = iniFolder;
+  if (Settings::Instance()->currentFolder.empty())
+    Settings::Instance()->currentFolder = homeFolder;
+  Settings::Instance()->initSettings(iniFolder);
 }
 
 static void check_vk_result(VkResult err) {
@@ -118,16 +144,14 @@ static void check_vk_result(VkResult err) {
 }
 
 #ifdef IMGUI_VULKAN_DEBUG_REPORT
-static VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType, uint64_t object, size_t location, int32_t messageCode, const char* pLayerPrefix, const char* pMessage, void* pUserData)
-{
+static VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType, uint64_t object, size_t location, int32_t messageCode, const char* pLayerPrefix, const char* pMessage, void* pUserData) {
 	(void)flags; (void)object; (void)location; (void)messageCode; (void)pUserData; (void)pLayerPrefix; // Unused arguments
 	fprintf(stderr, "[vulkan] ObjectType: %i\nMessage: %s\n\n", objectType, pMessage);
 	return VK_FALSE;
 }
 #endif // IMGUI_VULKAN_DEBUG_REPORT
 
-static void SetupVulkan(const char** extensions, uint32_t extensions_count)
-{
+static void SetupVulkan(const char** extensions, uint32_t extensions_count) {
 	VkResult err;
 
 	// Create Vulkan Instance
@@ -199,12 +223,12 @@ static void SetupVulkan(const char** extensions, uint32_t extensions_count)
 		vkGetPhysicalDeviceQueueFamilyProperties(g_PhysicalDevice, &count, NULL);
 		VkQueueFamilyProperties* queues = (VkQueueFamilyProperties*)malloc(sizeof(VkQueueFamilyProperties) * count);
 		vkGetPhysicalDeviceQueueFamilyProperties(g_PhysicalDevice, &count, queues);
-		for (uint32_t i = 0; i < count; i++)
-			if (queues[i].queueFlags & VK_QUEUE_GRAPHICS_BIT)
-			{
+		for (uint32_t i = 0; i < count; i++) {
+			if (queues[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
 				g_QueueFamily = i;
 				break;
 			}
+    }
 		free(queues);
 		IM_ASSERT(g_QueueFamily != (uint32_t)-1);
 	}
@@ -259,15 +283,13 @@ static void SetupVulkan(const char** extensions, uint32_t extensions_count)
 
 // All the ImGui_ImplVulkanH_XXX structures/functions are optional helpers used by the demo. 
 // Your real engine/app may not use them.
-static void SetupVulkanWindow(ImGui_ImplVulkanH_Window* wd, VkSurfaceKHR surface, int width, int height)
-{
+static void SetupVulkanWindow(ImGui_ImplVulkanH_Window* wd, VkSurfaceKHR surface, int width, int height) {
 	wd->Surface = surface;
 
 	// Check for WSI support
 	VkBool32 res;
 	vkGetPhysicalDeviceSurfaceSupportKHR(g_PhysicalDevice, g_QueueFamily, wd->Surface, &res);
-	if (res != VK_TRUE)
-	{
+	if (res != VK_TRUE) {
 		fprintf(stderr, "Error no WSI support on physical device 0\n");
 		exit(-1);
 	}
@@ -291,8 +313,7 @@ static void SetupVulkanWindow(ImGui_ImplVulkanH_Window* wd, VkSurfaceKHR surface
 	ImGui_ImplVulkanH_CreateWindow(g_Instance, g_PhysicalDevice, g_Device, wd, g_QueueFamily, g_Allocator, width, height, g_MinImageCount);
 }
 
-static void CleanupVulkan()
-{
+static void CleanupVulkan() {
 	vkDestroyDescriptorPool(g_Device, g_DescriptorPool, g_Allocator);
 
 #ifdef IMGUI_VULKAN_DEBUG_REPORT
@@ -305,13 +326,11 @@ static void CleanupVulkan()
 	vkDestroyInstance(g_Instance, g_Allocator);
 }
 
-static void CleanupVulkanWindow()
-{
+static void CleanupVulkanWindow() {
 	ImGui_ImplVulkanH_DestroyWindow(g_Instance, g_Device, &g_MainWindowData, g_Allocator);
 }
 
-static void FrameRender(ImGui_ImplVulkanH_Window* wd)
-{
+static void FrameRender(ImGui_ImplVulkanH_Window* wd) {
 	VkResult err;
 
 	VkSemaphore image_acquired_semaphore = wd->FrameSemaphores[wd->SemaphoreIndex].ImageAcquiredSemaphore;
@@ -372,8 +391,7 @@ static void FrameRender(ImGui_ImplVulkanH_Window* wd)
 	}
 }
 
-static void FramePresent(ImGui_ImplVulkanH_Window* wd)
-{
+static void FramePresent(ImGui_ImplVulkanH_Window* wd) {
 	VkSemaphore render_complete_semaphore = wd->FrameSemaphores[wd->SemaphoreIndex].RenderCompleteSemaphore;
 	VkPresentInfoKHR info = {};
 	info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;

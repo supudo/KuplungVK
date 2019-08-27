@@ -4,7 +4,18 @@
 
 #include <string>
 #include <vector>
+
+#ifdef _WIN32
+#undef main
+#include <boost/filesystem.hpp>
+#include <iostream>
 #include <Windows.h>
+#elif __APPLE__
+#include "CoreFoundation/CoreFoundation.h"
+#else
+#include <boost/filesystem.hpp>
+#include <iostream>
+#endif
 
 Settings* Settings::m_pInstance = NULL;
 
@@ -15,13 +26,14 @@ Settings* Settings::Instance() {
 }
 
 void Settings::initSettings(const std::string& iniFolder) {
-	m_pInstance->guiClearColor = { 70.0f / 255.0f, 70.0f / 255.0f, 70.0f / 255.0f, 255.0f / 255.0f };
+  m_pInstance->guiClearColor = {70.0f / 255.0f, 70.0f / 255.0f, 70.0f / 255.0f, 255.0f / 255.0f};
 
 	m_pInstance->MainWindow_Width = 1400;
 	m_pInstance->MainWindow_Height = 800;
 	m_pInstance->frameLog_Width = 300;
 	m_pInstance->frameLog_Height = 200;
 
+#ifdef _WIN32
 	m_pInstance->Setting_CurrentDriveIndex = 0;
 	m_pInstance->Setting_SelectedDriveIndex = 0;
 	m_pInstance->hddDriveList.empty();
@@ -41,7 +53,26 @@ void Settings::initSettings(const std::string& iniFolder) {
 			dc += 1;
 		}
 	}
+#endif
 	m_pInstance->ApplicationConfigurationFolder = iniFolder;
+}
+
+std::string Settings::string_format(const std::string& fmt_str, ...) {
+  int n = static_cast<int>(fmt_str.size()) * 2; /* Reserve two times as much as the length of the fmt_str */
+  std::unique_ptr<char[]> formatted;
+  va_list ap;
+  while (1) {
+    formatted.reset(new char[n]); /* Wrap the plain char array into the unique_ptr */
+    strcpy(&formatted[0], fmt_str.c_str());
+    va_start(ap, fmt_str);
+    int final_n = vsnprintf(&formatted[0], n, fmt_str.c_str(), ap);
+    va_end(ap);
+    if (final_n < 0 || final_n >= n)
+      n += abs(final_n - n + 1);
+    else
+      break;
+  }
+  return std::string(formatted.get());
 }
 
 void Settings::setLogFunc(const std::function<void(std::string)>& doLog) {

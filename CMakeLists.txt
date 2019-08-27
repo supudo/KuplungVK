@@ -114,11 +114,21 @@ SET(SOURCE_FILES
   utilities/imgui/imstb_rectpack.h
   utilities/imgui/imstb_textedit.h
   utilities/imgui/imstb_truetype.h
+  settings/SettingsStructs.h
+  settings/Settings.h
+  settings/Settings.cpp
+  ui/UIManager.h
+  ui/UIManager.cpp
+  ui/components/Log.h
+  ui/components/Log.cpp
   main.cpp)
 
-SET(Kuplung_Misc
+SET(KuplungVK_Misc
   resources/KuplungVK.icns
-  resources/KuplungVK.ico)
+  resources/KuplungVK.ico
+  resources/Kuplung_RecentFiles.ini
+  resources/Kuplung_RecentFilesImported.ini
+  resources/Kuplung_Settings.ini)
 
 IF (Boost_FOUND AND GLM_FOUND AND SDL2_FOUND AND GLFW3_FOUND AND assimp_FOUND AND Protobuf_FOUND AND MINIZIP_FOUND)
   IF (APPLE)
@@ -128,6 +138,8 @@ IF (Boost_FOUND AND GLM_FOUND AND SDL2_FOUND AND GLFW3_FOUND AND assimp_FOUND AN
 
     # Misc Files
     EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/resources/" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.app/Contents/Resources/")
+    FILE(GLOB Kuplung_Ini_Files "resources/*.ini")
+    FILE(COPY ${Kuplung_Ini_Files} DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.app/Contents/Resources/")
     FILE(GLOB Kuplung_Icns_Files "resources/*.icns")
     FILE(COPY ${Kuplung_Icns_Files} DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.app/Contents/Resources/")
     FILE(GLOB Kuplung_Ico_Files "resources/*.ico")

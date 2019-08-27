@@ -1,5 +1,5 @@
 #include "Log.h"
-#include "../../Settings/Settings.h"
+#include "../../settings/Settings.h"
 
 void Log::init(int positionX, int positionY, int width, int height) {
 	this->positionX = positionX;

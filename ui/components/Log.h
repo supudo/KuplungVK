@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../Utilities/ImGui/imgui.h"
+#include "../../utilities/imgui/imgui.h"
 
 class Log {
 public:

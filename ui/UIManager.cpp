@@ -1,5 +1,5 @@
 #include "UIManager.h"
-#include "../Settings/Settings.h"
+#include "../settings/Settings.h"
 
 void UIManager::init() {
 	Settings::Instance()->funcDoLog(Settings::Instance()->string_format("[KuplungVK + UIManager] Init!"));
