@@ -32,6 +32,7 @@
 #ifdef _WIN32
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
+#include "utilities/cpp/CPPUtilities.h"
 #elif defined(__APPLE__)
 #include <CoreFoundation/CoreFoundation.h>
 #include <boost/algorithm/string/replace.hpp>
@@ -42,6 +43,9 @@
 #endif
 
 #include "settings/Settings.h"
+#include "ui/UIManager.h"
+
+std::unique_ptr<UIManager> uiManager = nullptr;
 
 static VkAllocationCallbacks* g_Allocator = NULL;
 static VkInstance g_Instance = VK_NULL_HANDLE;
@@ -58,6 +62,18 @@ static uint32_t g_MinImageCount = 2;
 static bool g_SwapChainRebuild = false;
 static int g_SwapChainResizeWidth = 0;
 static int g_SwapChainResizeHeight = 0;
+
+SDL_Window* sdlWindow;
+
+void doLog(const std::string& message) {
+#ifdef _WIN32
+  OutputDebugString(CPPUtilities::convert_to_wstring("[KuplungVK] " + message + "\n").c_str());
+#else
+  printf("[KuplungVK] %s\n", message.c_str());
+#endif
+  //if (uiManager)
+  //	uiManager->doLog("[KuplungVK] " + message);
+}
 
 void initFolders() {
   std::string homeFolder(""), iniFolder("");
@@ -406,40 +422,54 @@ static void FramePresent(ImGui_ImplVulkanH_Window* wd) {
 }
 
 int main(int, char**) {
-	initFolders();
-
-	// Setup SDL
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0) {
-		printf("Error: %s\n", SDL_GetError());
+	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
+    printf("Error: SDL could not initialize! SDL Error: %s\n", SDL_GetError());
 		return -1;
 	}
 
-	// Setup window
-	SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
-	SDL_Window* window = SDL_CreateWindow("KuplungVK", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, window_flags);
+  initFolders();
+
+	SDL_WindowFlags window_flags = (SDL_WindowFlags)(Settings::Instance()->SDL_Window_Flags);
+	sdlWindow = SDL_CreateWindow("KuplungVK", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, Settings::Instance()->MainWindow_Width, Settings::Instance()->MainWindow_Height, window_flags);
+
+  Settings::Instance()->setLogFunc(std::bind(&doLog, std::placeholders::_1));
 
 	// Setup Vulkan
 	uint32_t extensions_count = 0;
-	SDL_Vulkan_GetInstanceExtensions(window, &extensions_count, NULL);
+	SDL_Vulkan_GetInstanceExtensions(sdlWindow, &extensions_count, NULL);
 	const char** extensions = new const char* [extensions_count];
-	SDL_Vulkan_GetInstanceExtensions(window, &extensions_count, extensions);
+	SDL_Vulkan_GetInstanceExtensions(sdlWindow, &extensions_count, extensions);
 	SetupVulkan(extensions, extensions_count);
 	delete[] extensions;
 
 	// Create Window Surface
 	VkSurfaceKHR surface;
 	VkResult err;
-	if (SDL_Vulkan_CreateSurface(window, g_Instance, &surface) == 0)
-	{
-		printf("Failed to create Vulkan surface.\n");
+	if (SDL_Vulkan_CreateSurface(sdlWindow, g_Instance, &surface) == 0) {
+    printf("Error: Failed to create Vulkan surface! SDL Error: %s\n", SDL_GetError());
 		return 1;
 	}
 
 	// Create Framebuffers
 	int w, h;
-	SDL_GetWindowSize(window, &w, &h);
+	SDL_GetWindowSize(sdlWindow, &w, &h);
 	ImGui_ImplVulkanH_Window* wd = &g_MainWindowData;
 	SetupVulkanWindow(wd, surface, w, h);
+  
+	/*ImGui_ImplVulkan_InitInfo init_info = {};
+	init_info.Instance = g_Instance;
+	init_info.PhysicalDevice = g_PhysicalDevice;
+	init_info.Device = g_Device;
+	init_info.QueueFamily = g_QueueFamily;
+	init_info.Queue = g_Queue;
+	init_info.PipelineCache = g_PipelineCache;
+	init_info.DescriptorPool = g_DescriptorPool;
+	init_info.Allocator = g_Allocator;
+	init_info.MinImageCount = g_MinImageCount;
+	init_info.ImageCount = wd->ImageCount;
+	init_info.CheckVkResultFn = check_vk_result;
+  uiManager = std::make_unique<UIManager>();
+  uiManager->init(sdlWindow, init_info, wd);*/
 
 	// Setup Dear ImGui context
 	IMGUI_CHECKVERSION();
@@ -453,7 +483,7 @@ int main(int, char**) {
 	//ImGui::StyleColorsClassic();
 
 	// Setup Platform/Renderer bindings
-	ImGui_ImplSDL2_InitForVulkan(window);
+	ImGui_ImplSDL2_InitForVulkan(sdlWindow);
 	ImGui_ImplVulkan_InitInfo init_info = {};
 	init_info.Instance = g_Instance;
 	init_info.PhysicalDevice = g_PhysicalDevice;
@@ -520,29 +550,27 @@ int main(int, char**) {
 
 	// Main loop
 	bool done = false;
-	while (!done)
-	{
+	while (!done) {
 		// Poll and handle events (inputs, window resize, etc.)
 		// You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
 		// - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
 		// - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
 		// Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
 		SDL_Event event;
-		while (SDL_PollEvent(&event))
-		{
+		while (SDL_PollEvent(&event)) {
+      uiManager->renderStart();
+
 			ImGui_ImplSDL2_ProcessEvent(&event);
 			if (event.type == SDL_QUIT)
 				done = true;
-			if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED && event.window.windowID == SDL_GetWindowID(window))
-			{
+			if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED && event.window.windowID == SDL_GetWindowID(sdlWindow)) {
 				g_SwapChainResizeWidth = (int)event.window.data1;
 				g_SwapChainResizeHeight = (int)event.window.data2;
 				g_SwapChainRebuild = true;
 			}
 		}
 
-		if (g_SwapChainRebuild)
-		{
+		if (g_SwapChainRebuild) {
 			g_SwapChainRebuild = false;
 			ImGui_ImplVulkan_SetMinImageCount(g_MinImageCount);
 			ImGui_ImplVulkanH_CreateWindow(g_Instance, g_PhysicalDevice, g_Device, &g_MainWindowData, g_QueueFamily, g_Allocator, g_SwapChainResizeWidth, g_SwapChainResizeHeight, g_MinImageCount);
@@ -551,7 +579,7 @@ int main(int, char**) {
 
 		// Start the Dear ImGui frame
 		ImGui_ImplVulkan_NewFrame();
-		ImGui_ImplSDL2_NewFrame(window);
+		ImGui_ImplSDL2_NewFrame(sdlWindow);
 		ImGui::NewFrame();
 
 		// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
@@ -597,6 +625,8 @@ int main(int, char**) {
 		FrameRender(wd);
 
 		FramePresent(wd);
+
+    uiManager->renderEnd();
 	}
 
 	// Cleanup
@@ -609,7 +639,7 @@ int main(int, char**) {
 	CleanupVulkanWindow();
 	CleanupVulkan();
 
-	SDL_DestroyWindow(window);
+	SDL_DestroyWindow(sdlWindow);
 	SDL_Quit();
 
 	return 0;

@@ -20,6 +20,9 @@
     <Filter Include="resources">
       <UniqueIdentifier>{d0600da9-c031-4195-aefd-252a60839e66}</UniqueIdentifier>
     </Filter>
+    <Filter Include="utilities\cpp">
+      <UniqueIdentifier>{c5dbd711-5cbb-4710-bceb-63c3bb27fba2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -49,6 +52,9 @@
     </ClCompile>
     <ClCompile Include="settings\Settings.cpp">
       <Filter>settings</Filter>
+    </ClCompile>
+    <ClCompile Include="utilities\cpp\CPPUtilities.cpp">
+      <Filter>utilities\cpp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -87,6 +93,9 @@
     </ClInclude>
     <ClInclude Include="settings\SettingsStructs.h">
       <Filter>settings</Filter>
+    </ClInclude>
+    <ClInclude Include="utilities\cpp\CPPUtilities.h">
+      <Filter>utilities\cpp</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

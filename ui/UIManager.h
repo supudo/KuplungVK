@@ -9,11 +9,16 @@
 #include <memory>
 #include <string>
 
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_syswm.h>
+#include <SDL2/SDL_vulkan.h>
+#include <vulkan/vulkan.hpp>
+
 #include "components/Log.h"
 
 class UIManager {
 public: 
-	void init();
+	void init(SDL_Window* sdlWindow, ImGui_ImplVulkan_InitInfo init_info, ImGui_ImplVulkanH_Window* wd);
 	void renderStart();
 	void renderEnd();
 	

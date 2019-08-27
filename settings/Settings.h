@@ -18,9 +18,12 @@ public:
 	void setLogFunc(const std::function<void(std::string)>& doLog);
 
 	std::function<void(std::string)> funcDoLog;
-	
+
+  int SDL_Window_Flags;
 	int MainWindow_Width, MainWindow_Height;
 	int frameLog_Width, frameLog_Height;
+
+  bool logDebugInfo;
 	
 	std::string ApplicationConfigurationFolder, currentFolder;
 	int Setting_CurrentDriveIndex, Setting_SelectedDriveIndex;

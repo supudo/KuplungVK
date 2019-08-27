@@ -17,6 +17,10 @@
 #include <iostream>
 #endif
 
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_syswm.h>
+#include <SDL2/SDL_vulkan.h>
+
 Settings* Settings::m_pInstance = NULL;
 
 Settings* Settings::Instance() {
@@ -28,10 +32,13 @@ Settings* Settings::Instance() {
 void Settings::initSettings(const std::string& iniFolder) {
   m_pInstance->guiClearColor = {70.0f / 255.0f, 70.0f / 255.0f, 70.0f / 255.0f, 255.0f / 255.0f};
 
+  m_pInstance->SDL_Window_Flags = SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
 	m_pInstance->MainWindow_Width = 1400;
 	m_pInstance->MainWindow_Height = 800;
 	m_pInstance->frameLog_Width = 300;
 	m_pInstance->frameLog_Height = 200;
+
+  m_pInstance->logDebugInfo = true;
 
 #ifdef _WIN32
 	m_pInstance->Setting_CurrentDriveIndex = 0;
