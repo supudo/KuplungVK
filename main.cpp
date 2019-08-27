@@ -10,6 +10,10 @@
 // Tell SDL not to mess with main()
 #define SDL_MAIN_HANDLED
 
+#define WIN32_LEAN_AND_MEAN
+// Windows Header Files
+#include <windows.h>
+
 #include <glm/glm.hpp>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_syswm.h>
@@ -24,30 +28,90 @@
 #include <vector>
 #include <stdio.h>
 #include <stdlib.h>
+#include <shlobj.h>
+
+#include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/path.hpp>
 
 #ifdef _DEBUG
 #define IMGUI_VULKAN_DEBUG_REPORT
 #endif
 
+#include "settings/Settings.h"
+
 static VkAllocationCallbacks* g_Allocator = NULL;
-static VkInstance               g_Instance = VK_NULL_HANDLE;
-static VkPhysicalDevice         g_PhysicalDevice = VK_NULL_HANDLE;
-static VkDevice                 g_Device = VK_NULL_HANDLE;
-static uint32_t                 g_QueueFamily = (uint32_t)-1;
-static VkQueue                  g_Queue = VK_NULL_HANDLE;
+static VkInstance g_Instance = VK_NULL_HANDLE;
+static VkPhysicalDevice g_PhysicalDevice = VK_NULL_HANDLE;
+static VkDevice g_Device = VK_NULL_HANDLE;
+static uint32_t g_QueueFamily = (uint32_t)-1;
+static VkQueue g_Queue = VK_NULL_HANDLE;
 static VkDebugReportCallbackEXT g_DebugReport = VK_NULL_HANDLE;
-static VkPipelineCache          g_PipelineCache = VK_NULL_HANDLE;
-static VkDescriptorPool         g_DescriptorPool = VK_NULL_HANDLE;
+static VkPipelineCache g_PipelineCache = VK_NULL_HANDLE;
+static VkDescriptorPool g_DescriptorPool = VK_NULL_HANDLE;
 
 static ImGui_ImplVulkanH_Window g_MainWindowData;
-static uint32_t                 g_MinImageCount = 2;
-static bool                     g_SwapChainRebuild = false;
-static int                      g_SwapChainResizeWidth = 0;
-static int                      g_SwapChainResizeHeight = 0;
+static uint32_t g_MinImageCount = 2;
+static bool g_SwapChainRebuild = false;
+static int g_SwapChainResizeWidth = 0;
+static int g_SwapChainResizeHeight = 0;
 
-static void check_vk_result(VkResult err)
-{
-	if (err == 0) return;
+void initFolders() {
+	std::string homeFolder(""), iniFolder("");
+
+	char const* hdrive = getenv("HOMEDRIVE");
+	char const* hpath = getenv("HOMEPATH");
+	homeFolder = std::string(hdrive) + std::string(hpath);
+
+	TCHAR szPath[MAX_PATH];
+	if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, szPath))) {
+		std::string folderLocalAppData("");
+#ifndef UNICODE
+		folderLocalAppData = szPath;
+#else
+		std::wstring folderLocalAppDataW = szPath;
+		folderLocalAppData = std::string(folderLocalAppDataW.begin(), folderLocalAppDataW.end());
+#endif
+		//std::string folderLocalAppData(szPath);
+		folderLocalAppData += "\\supudo.net";
+		if (!boost::filesystem::exists(folderLocalAppData))
+			boost::filesystem::create_directory(folderLocalAppData);
+		folderLocalAppData += "\\Kuplung";
+		if (!boost::filesystem::exists(folderLocalAppData))
+			boost::filesystem::create_directory(folderLocalAppData);
+
+		std::string current_folder = boost::filesystem::current_path().string() + "\\resources";
+		std::string fName("");
+
+		fName = "Kuplung_Settings.ini";
+		std::string iniFileSource(current_folder + "\\" + fName);
+		std::string iniFileDestination = folderLocalAppData + "\\" + fName;
+		if (!boost::filesystem::exists(iniFileDestination))
+			boost::filesystem::copy(iniFileSource, iniFileDestination);
+
+		fName = "Kuplung_RecentFiles.ini";
+		std::string iniFileRecentSource(current_folder + "\\" + fName);
+		std::string iniFileRecentDestination = folderLocalAppData + "\\" + fName;
+		if (!boost::filesystem::exists(iniFileRecentDestination))
+			boost::filesystem::copy(iniFileRecentSource, iniFileRecentDestination);
+
+		fName = "Kuplung_RecentFilesImported.ini";
+		std::string iniFileRecentImportedSource(current_folder + "\\" + fName);
+		std::string iniFileRecentImportedDestination = folderLocalAppData + "\\" + fName;
+		if (!boost::filesystem::exists(iniFileRecentImportedDestination))
+			boost::filesystem::copy(iniFileRecentImportedSource, iniFileRecentImportedDestination);
+
+		iniFolder = folderLocalAppData;
+	}
+	if (Settings::Instance()->ApplicationConfigurationFolder.empty())
+		Settings::Instance()->ApplicationConfigurationFolder = iniFolder;
+	if (Settings::Instance()->currentFolder.empty())
+		Settings::Instance()->currentFolder = homeFolder;
+	Settings::Instance()->initSettings(iniFolder);
+}
+
+static void check_vk_result(VkResult err) {
+	if (err == 0)
+		return;
 	printf("VkResult %d\n", err);
 	if (err < 0)
 		abort();
@@ -323,11 +387,11 @@ static void FramePresent(ImGui_ImplVulkanH_Window* wd)
 	wd->SemaphoreIndex = (wd->SemaphoreIndex + 1) % wd->ImageCount; // Now we can use the next set of semaphores
 }
 
-int main(int, char**)
-{
+int main(int, char**) {
+	initFolders();
+
 	// Setup SDL
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)
-	{
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0) {
 		printf("Error: %s\n", SDL_GetError());
 		return -1;
 	}
@@ -434,7 +498,7 @@ int main(int, char**)
 	// Our state
 	bool show_demo_window = true;
 	bool show_another_window = false;
-	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+	ImVec4 clear_color = ImVec4(Settings::Instance()->guiClearColor.r, Settings::Instance()->guiClearColor.g, Settings::Instance()->guiClearColor.b, Settings::Instance()->guiClearColor.w);
 
 	// Main loop
 	bool done = false;

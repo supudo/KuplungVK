@@ -8,6 +8,15 @@
     <Filter Include="utilities\imgui">
       <UniqueIdentifier>{ba5ce922-efcc-4f66-97c9-2c8c08162f9a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ui">
+      <UniqueIdentifier>{356219c1-6040-4e12-8154-1afbdd4003a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui\components">
+      <UniqueIdentifier>{8bc85d6e-66d6-4308-b0a6-5ad0b56d4dc3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="settings">
+      <UniqueIdentifier>{8ca8cd78-f2f5-4835-a25c-f6218de9e280}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -28,6 +37,15 @@
     </ClCompile>
     <ClCompile Include="utilities\imgui\imgui_impl_sdl.cpp">
       <Filter>utilities\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\UIManager.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\components\Log.cpp">
+      <Filter>ui\components</Filter>
+    </ClCompile>
+    <ClCompile Include="settings\Settings.cpp">
+      <Filter>settings</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -54,6 +72,18 @@
     </ClInclude>
     <ClInclude Include="utilities\imgui\imgui_impl_vulkan.h">
       <Filter>utilities\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\UIManager.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\components\Log.h">
+      <Filter>ui\components</Filter>
+    </ClInclude>
+    <ClInclude Include="settings\Settings.h">
+      <Filter>settings</Filter>
+    </ClInclude>
+    <ClInclude Include="settings\SettingsStructs.h">
+      <Filter>settings</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
