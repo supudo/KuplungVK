@@ -17,6 +17,9 @@
     <Filter Include="settings">
       <UniqueIdentifier>{8ca8cd78-f2f5-4835-a25c-f6218de9e280}</UniqueIdentifier>
     </Filter>
+    <Filter Include="resources">
+      <UniqueIdentifier>{d0600da9-c031-4195-aefd-252a60839e66}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -85,5 +88,38 @@
     <ClInclude Include="settings\SettingsStructs.h">
       <Filter>settings</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\KuplungVK_RecentFiles.ini">
+      <Filter>resources</Filter>
+    </None>
+    <None Include="resources\KuplungVK_RecentFilesImported.ini">
+      <Filter>resources</Filter>
+    </None>
+    <None Include="resources\KuplungVK_Settings.ini">
+      <Filter>resources</Filter>
+    </None>
+    <None Include="resources\KuplungVK.icns">
+      <Filter>resources</Filter>
+    </None>
+    <None Include="CODE_OF_CONDUCT.md" />
+    <None Include="CONTRIBUTING.md" />
+    <None Include="LICENSE.md" />
+    <None Include="README.md" />
+    <None Include=".gitignore" />
+    <None Include=".editorconfig" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="resources\KuplungVK.ico">
+      <Filter>resources</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resources\kuplungVK.rc">
+      <Filter>resources</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="CMakeLists.txt" />
   </ItemGroup>
 </Project>

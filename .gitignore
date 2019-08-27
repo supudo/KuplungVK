@@ -10,8 +10,6 @@
 *.dll
 *.dylib
 
-imgui.ini
-
 #Cmake build
 cmake-build/
 build/
@@ -55,3 +53,8 @@ DerivedData
 .idea/
 *.hmap
 xcuserdata/*
+
+# Customs
+
+imgui.ini
+.editorconfig

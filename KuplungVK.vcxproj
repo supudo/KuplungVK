@@ -182,6 +182,27 @@
     <ClInclude Include="utilities\imgui\imstb_textedit.h" />
     <ClInclude Include="utilities\imgui\imstb_truetype.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include=".editorconfig" />
+    <None Include=".gitignore" />
+    <None Include="CODE_OF_CONDUCT.md" />
+    <None Include="CONTRIBUTING.md" />
+    <None Include="LICENSE.md" />
+    <None Include="README.md" />
+    <None Include="resources\KuplungVK.icns" />
+    <None Include="resources\KuplungVK_RecentFiles.ini" />
+    <None Include="resources\KuplungVK_RecentFilesImported.ini" />
+    <None Include="resources\KuplungVK_Settings.ini" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="resources\KuplungVK.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resources\kuplungVK.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="CMakeLists.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

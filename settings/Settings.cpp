@@ -57,6 +57,7 @@ void Settings::initSettings(const std::string& iniFolder) {
 	m_pInstance->ApplicationConfigurationFolder = iniFolder;
 }
 
+#ifdef __APPLE__
 std::string Settings::string_format(const std::string& fmt_str, ...) {
   int n = static_cast<int>(fmt_str.size()) * 2; /* Reserve two times as much as the length of the fmt_str */
   std::unique_ptr<char[]> formatted;
@@ -74,6 +75,7 @@ std::string Settings::string_format(const std::string& fmt_str, ...) {
   }
   return std::string(formatted.get());
 }
+#endif
 
 void Settings::setLogFunc(const std::function<void(std::string)>& doLog) {
 	this->funcDoLog = doLog;
