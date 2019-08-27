@@ -32,6 +32,7 @@ MSVC/Release/*
 # VS 2019
 .vs
 x64
+Debug
 
 # VSCode
 .vscode
