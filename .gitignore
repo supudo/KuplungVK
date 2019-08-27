@@ -1,0 +1,52 @@
+# C++ objects and libs
+
+*.slo
+*.lo
+*.o
+*.a
+*.la
+*.lai
+*.so
+*.dll
+*.dylib
+
+imgui.ini
+
+#Cmake build
+cmake-build/
+build/
+
+# VS 2015
+*.tlog
+VS2015/packages/*
+VS2015/Kuplung.VC.opendb
+VS2015/Kuplung.sdf
+
+# VS 2017
+*.sdf
+MSVC/resources/*
+MSVC/.vs/*
+MSVC/Kuplung.dir/*
+MSVC/Release/*
+
+# VSCode
+.vscode
+
+# Xcode
+.DS_Store
+*/build/*
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata
+profile
+*.moved-aside
+DerivedData
+.idea/
+*.hmap
+xcuserdata/*
