@@ -113,6 +113,9 @@
       <AdditionalLibraryDirectories>D:/Libs/boost_1_70_0_142.2/64/lib64-msvc-14.2;$(VULKAN_SDK)\Lib;$(VULKAN_SDK)\Third-Party\Bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
+    <PostBuildEvent>
+      <Command>cmd /c xcopy /S /I /Y "$(ProjectDir)\resources" "$(TargetDir)resources"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
