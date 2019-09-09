@@ -17,18 +17,12 @@ void DialogOptions::showOptionsWindow(ImGuiStyle* ref, DialogStyle* wStyle, bool
   ImGui::SetNextWindowSize(ImVec2(400, 500), ImGuiCond_FirstUseEver);
   ImGui::SetNextWindowPos(ImVec2(200, 200), ImGuiCond_FirstUseEver);
 
-  /// MIGRATE : ImGui::Begin("Options", p_opened, ImGuiWindowFlags_ShowBorders);
   ImGui::Begin("Options", p_opened);
 
   if (ImGui::CollapsingHeader("General", ImGuiTreeNodeFlags_DefaultOpen)) {
     ImGui::Indent();
     if (ImGui::Checkbox("Log Messages", &Settings::Instance()->logDebugInfo))
       Settings::Instance()->saveSettings();
-#ifdef DEF_KuplungSetting_UseCuda
-    if (ImGui::Checkbox("Use Cuda (required Nvidia Cuda)", &Settings::Instance()->UseCuda))
-      Settings::Instance()->saveSettings();
-#endif
-
     ImGui::PushStyleVar(ImGuiStyleVar_ChildWindowRounding, 5.0f);
     ImGui::BeginChild("RefreshRate", ImVec2(0.0f, 98.0f), true);
     ImGui::Text("Consumption Refresh Interval (in seconds, 0 - disabled)");
@@ -39,6 +33,31 @@ void DialogOptions::showOptionsWindow(ImGuiStyle* ref, DialogStyle* wStyle, bool
     ImGui::EndChild();
     ImGui::PopStyleVar();
 
+    ImGui::Unindent();
+  }
+
+  if (ImGui::CollapsingHeader("Rendering")) {
+    ImGui::Indent();
+    ImGui::Text("Select GPU:");
+    ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.95);
+
+    if (ImGui::Combo(
+      "##selected_gpu",
+      &Settings::Instance()->SelectedGPU,
+      [](void* vec, int idx, const char** out_text)
+      {
+        auto& vector = *static_cast<std::vector<std::string>*>(vec);
+        if (idx < 0 || idx >= static_cast<int>(vector.size()))
+          return false;
+        *out_text = vector.at(idx).c_str();
+        return true;
+      },
+      static_cast<void*>(&Settings::Instance()->AvailableGPUs),
+        Settings::Instance()->AvailableGPUs.size()
+        ))
+      Settings::Instance()->saveSettings();
+
+    ImGui::PopItemWidth();
     ImGui::Unindent();
   }
 

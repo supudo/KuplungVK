@@ -29,6 +29,7 @@ public:
 
   int SelectedGPU;
   int Consumption_Interval_CPU, Consumption_Interval_Memory;
+  std::vector<std::string> AvailableGPUs;
 
   int UIFontFileIndex;
   float UIFontSize;

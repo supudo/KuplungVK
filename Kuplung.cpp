@@ -340,20 +340,6 @@ void Kuplung::selectBestGPU() {
   err = vkEnumeratePhysicalDevices(this->g_Instance, &gpu_count, gpus);
   KVK_checkVKRresult(err);
 
-  VkPhysicalDeviceProperties device_props;
-  vkGetPhysicalDeviceProperties(gpus[0], &device_props);
-  printf("GPU 0:\n apiVersion : %i\n driverVersion : %i\n vendorID = %i\n deviceID = %i\n deviceType = %i (2 = VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)\n deviceName = %s\n",
-    device_props.apiVersion,
-    device_props.driverVersion,
-    device_props.vendorID,
-    device_props.deviceID,
-    device_props.deviceType,
-    device_props.deviceName
-    // device_props.pipelineCacheUUID,
-    // device_props.limits,
-    // device_props.sparseProperties
-  );
-
   int32_t ddsel = -1;
   VkPhysicalDevice desired_device;
   std::vector<VkPhysicalDevice> gpu_devices = std::vector<VkPhysicalDevice>(gpu_count);
@@ -375,19 +361,22 @@ void Kuplung::selectBestGPU() {
       doLog("No suitable GPU found!");
 
     std::string deviceName = props.deviceName;
+    doLog(Settings::Instance()->string_format("------ %s", deviceName.c_str()));
 
     // Determine the available device local memory.
     auto memoryProps = VkPhysicalDeviceMemoryProperties{};
     vkGetPhysicalDeviceMemoryProperties(device, &memoryProps);
     auto heapsPointer = memoryProps.memoryHeaps;
     auto heaps = std::vector<VkMemoryHeap>(heapsPointer, heapsPointer + memoryProps.memoryHeapCount);
+    VkDeviceSize max_heap = 0;
     for (const auto& heap : heaps) {
       if (heap.flags & VkMemoryHeapFlagBits::VK_MEMORY_HEAP_DEVICE_LOCAL_BIT) {
-          // Device local heap, should be size of total GPU VRAM.
-          //heap.size will be the size of VRAM in bytes. (bigger is better)
-          doLog(Settings::Instance()->string_format("Device '%s' with memory : %s", deviceName.c_str(), Settings::Instance()->prettyBbytes(heap.size).c_str()));
+        // Device local heap, should be size of total GPU VRAM. heap.size will be the size of VRAM in bytes. (bigger is better)
+        max_heap = std::max(max_heap, heap.size);
       }
     }
+    doLog(Settings::Instance()->string_format("Device '%s' with memory : %s", deviceName.c_str(), Settings::Instance()->prettyBbytes(max_heap).c_str()));
+    Settings::Instance()->AvailableGPUs.push_back(deviceName + " : " + Settings::Instance()->prettyBbytes(max_heap));
   }
 
   Settings::Instance()->SelectedGPU = ddsel;
