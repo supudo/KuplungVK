@@ -33,6 +33,8 @@ void Settings::initSettings(const std::string& iniFolder) {
   m_pInstance->cfgUtils = std::make_unique<ConfigUtils>();
   m_pInstance->cfgUtils->init(iniFolder);
 
+  m_pInstance->appVersion = m_pInstance->cfgUtils->readString("appVersion");
+
   m_pInstance->guiClearColor = {70.0f / 255.0f, 70.0f / 255.0f, 70.0f / 255.0f, 255.0f / 255.0f};
 
   m_pInstance->SelectedGPU = m_pInstance->cfgUtils->readInt("SelectedGPU");
@@ -124,6 +126,7 @@ std::string Settings::string_format(const std::string& fmt_str, ...) {
 #endif
 
 void Settings::saveSettings() {
+  this->cfgUtils->writeString("appVersion", this->appVersion);
   this->cfgUtils->writeString("currentFolder", this->currentFolder);
 
   this->cfgUtils->writeBool("logDebugInfo", this->logDebugInfo);

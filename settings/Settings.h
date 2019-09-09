@@ -21,7 +21,7 @@ public:
 
 	std::function<void(std::string)> funcDoLog;
 
-  std::string UIFontFile, newLineDelimiter;
+  std::string UIFontFile, newLineDelimiter, appVersion;
 
   int SDL_Window_Flags;
 	int SDL_Window_Width, SDL_Window_Height;

@@ -1,0 +1,77 @@
+# Kuplung (ImGui) styles
+# You can export/import style between different applications/users
+
+# Font
+Font = -
+FontSize = 14.00
+
+# Rendering
+AntiAliasedLines = 1
+AntiAliasedShapes = 1
+CurveTessellationTol = 1.250000
+Alpha = 1.000000
+
+# Sizes
+style.sizes.WindowPadding = 8.000000, 8.000000
+style.sizes.WindowRounding = 7.000000
+style.sizes.ChildWindowRounding = 7.000000
+style.sizes.FramePadding = 4.000000, 3.000000
+style.sizes.FrameRounding = 0.000000
+style.sizes.ItemSpacing = 8.000000, 4.000000
+style.sizes.ItemInnerSpacing = 4.000000, 4.000000
+style.sizes.TouchExtraPadding = 0.000000, 0.000000
+style.sizes.IndentSpacing = 21.000000
+style.sizes.ScrollbarSize = 14.000000
+style.sizes.ScrollbarRounding = 9.000000
+style.sizes.GrabMinSize = 10.000000
+style.sizes.GrabRounding = 0.000000
+
+# Colors
+style.colors.0 = 1.000000, 1.000000, 1.000000, 1.000000
+style.colors.1 = 0.500000, 0.500000, 0.500000, 1.000000
+style.colors.2 = 0.060000, 0.060000, 0.060000, 0.940000
+style.colors.3 = 0.000000, 0.000000, 0.000000, 0.000000
+style.colors.4 = 0.080000, 0.080000, 0.080000, 0.940000
+style.colors.5 = 0.430000, 0.430000, 0.500000, 0.500000
+style.colors.6 = 0.000000, 0.000000, 0.000000, 0.000000
+style.colors.7 = 0.160000, 0.290000, 0.480000, 0.540000
+style.colors.8 = 0.260000, 0.590000, 0.980000, 0.400000
+style.colors.9 = 0.260000, 0.590000, 0.980000, 0.670000
+style.colors.10 = 0.040000, 0.040000, 0.040000, 1.000000
+style.colors.11 = 0.160000, 0.290000, 0.480000, 1.000000
+style.colors.12 = 0.000000, 0.000000, 0.000000, 0.510000
+style.colors.13 = 0.140000, 0.140000, 0.140000, 1.000000
+style.colors.14 = 0.020000, 0.020000, 0.020000, 0.530000
+style.colors.15 = 0.310000, 0.310000, 0.310000, 1.000000
+style.colors.16 = 0.410000, 0.410000, 0.410000, 1.000000
+style.colors.17 = 0.510000, 0.510000, 0.510000, 1.000000
+style.colors.18 = 0.260000, 0.590000, 0.980000, 1.000000
+style.colors.19 = 0.240000, 0.520000, 0.880000, 1.000000
+style.colors.20 = 0.260000, 0.590000, 0.980000, 1.000000
+style.colors.21 = 0.260000, 0.590000, 0.980000, 0.400000
+style.colors.22 = 0.260000, 0.590000, 0.980000, 1.000000
+style.colors.23 = 0.060000, 0.530000, 0.980000, 1.000000
+style.colors.24 = 0.260000, 0.590000, 0.980000, 0.310000
+style.colors.25 = 0.260000, 0.590000, 0.980000, 0.800000
+style.colors.26 = 0.260000, 0.590000, 0.980000, 1.000000
+style.colors.27 = 0.430000, 0.430000, 0.500000, 0.500000
+style.colors.28 = 0.100000, 0.400000, 0.750000, 0.780000
+style.colors.29 = 0.100000, 0.400000, 0.750000, 1.000000
+style.colors.30 = 0.260000, 0.590000, 0.980000, 0.250000
+style.colors.31 = 0.260000, 0.590000, 0.980000, 0.670000
+style.colors.32 = 0.260000, 0.590000, 0.980000, 0.950000
+style.colors.33 = 0.180000, 0.350000, 0.580000, 0.862000
+style.colors.34 = 0.260000, 0.590000, 0.980000, 0.800000
+style.colors.35 = 0.200000, 0.410000, 0.680000, 1.000000
+style.colors.36 = 0.068000, 0.102000, 0.148000, 0.972400
+style.colors.37 = 0.136000, 0.262000, 0.424000, 1.000000
+style.colors.38 = 0.610000, 0.610000, 0.610000, 1.000000
+style.colors.39 = 1.000000, 0.430000, 0.350000, 1.000000
+style.colors.40 = 0.900000, 0.700000, 0.000000, 1.000000
+style.colors.41 = 1.000000, 0.600000, 0.000000, 1.000000
+style.colors.42 = 0.260000, 0.590000, 0.980000, 0.350000
+style.colors.43 = 1.000000, 1.000000, 0.000000, 0.900000
+style.colors.44 = 0.260000, 0.590000, 0.980000, 1.000000
+style.colors.45 = 1.000000, 1.000000, 1.000000, 0.700000
+style.colors.46 = 0.800000, 0.800000, 0.800000, 0.200000
+style.colors.47 = 0.800000, 0.800000, 0.800000, 0.350000

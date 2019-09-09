@@ -19,6 +19,7 @@
 #include <vector>
 #include <stdio.h>
 #include <stdlib.h>
+#include <functional>
 
 #ifdef _WIN32
 #include <boost/filesystem/operations.hpp>
@@ -56,6 +57,7 @@ private:
   void renderScene();
 
   void guiQuit();
+  void guiNewScene();
 
   // Screen dimension constants
   const char *WINDOW_TITLE = "KuplungVK";

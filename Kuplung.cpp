@@ -15,8 +15,6 @@ Kuplung::Kuplung() {
   this->g_SwapChainRebuild = false;
   this->g_SwapChainResizeWidth = 0;
   this->g_SwapChainResizeHeight = 0;
-
-  this->managerUI = std::make_unique<UIManager>();
 }
 
 Kuplung::~Kuplung() {
@@ -46,7 +44,7 @@ int Kuplung::run() {
   // Our state
   bool show_demo_window = true;
   bool show_another_window = false;
-  ImVec4 clear_color = ImVec4(Settings::Instance()->guiClearColor.r, Settings::Instance()->guiClearColor.g, Settings::Instance()->guiClearColor.b, Settings::Instance()->guiClearColor.w);
+  ImVec4 vkClearColor = ImVec4(Settings::Instance()->guiClearColor.r, Settings::Instance()->guiClearColor.g, Settings::Instance()->guiClearColor.b, Settings::Instance()->guiClearColor.w);
 
   while (this->gameIsRunning) {
     float fts = (1.0 * std::clock() / CLOCKS_PER_SEC);
@@ -55,10 +53,6 @@ int Kuplung::run() {
       this->onEvent(&ev);
       ImGui_ImplSDL2_ProcessEvent(&ev);
     }
-
-    // rendering
-    this->managerUI->renderStart();
-    this->renderScene();
 
     if (this->gameIsRunning == false)
       break;
@@ -73,60 +67,21 @@ int Kuplung::run() {
       this->g_MainWindowData.FrameIndex = 0;
     }
 
-    // Start the Dear ImGui frame
-    ImGui_ImplVulkan_NewFrame();
-    ImGui_ImplSDL2_NewFrame(this->sdlWindow);
-    ImGui::NewFrame();
+    this->managerUI->renderStart();
+    this->managerUI->renderUI(this->sdlWindow, vkClearColor);
 
-    // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-    if (show_demo_window)
-      ImGui::ShowDemoWindow(&show_demo_window);
+    this->renderScene();
 
-    // 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
-    {
-      float f = 0.0f;
-      int counter = 0;
+    this->managerUI->renderEnd(this->windowVulkan->Frames[this->windowVulkan->FrameIndex].CommandBuffer);
 
-      ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
-      ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-      ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-      ImGui::Checkbox("Another Window", &show_another_window);
-
-      ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-      ImGui::ColorEdit3("clear color", (float*)& clear_color); // Edit 3 floats representing a color
-
-      if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-        counter++;
-      ImGui::SameLine();
-      ImGui::Text("counter = %d", counter);
-
-      ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-      ImGui::End();
-    }
-
-    // 3. Show another simple window.
-    if (show_another_window) {
-      ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-      ImGui::Text("Hello from another window!");
-      if (ImGui::Button("Close Me"))
-        show_another_window = false;
-      ImGui::End();
-    }
-
-    // Rendering
-    ImGui::Render();
-    memcpy(&this->windowVulkan->ClearValue.color.float32[0], &clear_color, 4 * sizeof(float));
+    memcpy(&this->windowVulkan->ClearValue.color.float32[0], &vkClearColor, 4 * sizeof(float));
     this->FrameRender(this->windowVulkan);
     this->FramePresent(this->windowVulkan);
-
-    this->managerUI->renderEnd();
 
     if (Settings::Instance()->showFrameRenderTime) {
       if (frameCounter > ImGui::GetIO().Framerate) {
         float fte = (1.0 * std::clock() / CLOCKS_PER_SEC);
         Settings::Instance()->funcDoLog(Settings::Instance()->string_format("[TIMINGS] FRAME draw time : %f ms (%f seconds)", (fte - fts) * 1000, (fte - fts)));
-        // Settings::Instance()->logTimings(__FILE__, __func__);
         frameCounter = 1;
       }
       else
@@ -149,7 +104,7 @@ bool Kuplung::init() {
 
 	SDL_WindowFlags window_flags = (SDL_WindowFlags)(Settings::Instance()->SDL_Window_Flags);
 	sdlWindow = SDL_CreateWindow(this->WINDOW_TITLE, this->WINDOW_POSITION_X, this->WINDOW_POSITION_Y, Settings::Instance()->SDL_Window_Width, Settings::Instance()->SDL_Window_Height, window_flags);
-  this->doLog("[INIT] SWL Window created.");
+  this->doLog("[INIT] SDL Window created.");
 
   Settings::Instance()->setLogFunc(std::bind(&Kuplung::doLog, this, std::placeholders::_1));
   this->doLog("[INIT] Log function set.");
@@ -160,13 +115,13 @@ bool Kuplung::init() {
 
   this->gameIsRunning = true;
 
-	// Setup Vulkan
 	uint32_t extensions_count = 0;
 	SDL_Vulkan_GetInstanceExtensions(this->sdlWindow, &extensions_count, NULL);
 	const char** extensions = new const char* [extensions_count];
 	SDL_Vulkan_GetInstanceExtensions(this->sdlWindow, &extensions_count, extensions);
 	this->SetupVulkan(extensions, extensions_count);
 	delete[] extensions;
+  this->doLog("[INIT] Vulkan extensions initialized.");
 
 	// Create Window Surface
 	VkSurfaceKHR surface;
@@ -175,72 +130,53 @@ bool Kuplung::init() {
     doLog(Settings::Instance()->string_format("[Init] Error: Failed to create Vulkan surface! SDL Error: %s\n", SDL_GetError()));
     return false;
   }
+  this->doLog("[INIT] Vulkan window surface initialized.");
 
 	// Create Framebuffers
 	int w, h;
 	SDL_GetWindowSize(this->sdlWindow, &w, &h);
 	this->windowVulkan = &this->g_MainWindowData;
 	this->SetupVulkanWindow(this->windowVulkan, surface, w, h);
+  this->doLog("[INIT] Vulkan window initialized.");
 
-	/*ImGui_ImplVulkan_InitInfo init_info = {};
-	init_info.Instance = this->g_Instance;
-	init_info.PhysicalDevice = this->g_PhysicalDevice;
-	init_info.Device = this->g_Device;
-	init_info.QueueFamily = this->g_QueueFamily;
-	init_info.Queue = this->g_Queue;
-	init_info.PipelineCache = this->g_PipelineCache;
-	init_info.DescriptorPool = this->g_DescriptorPool;
-	init_info.Allocator = this->g_Allocator;
-	init_info.MinImageCount = this->g_MinImageCount;
-	init_info.ImageCount = this->windowVulkan->ImageCount;
-	init_info.CheckVkResultFn = this->checkVKRresult;
-  this->managerUI = std::make_unique<this->managerUI>();
-  this->managerUI->init(sdlWindow, init_info, this->windowVulkan);*/
+  {
+    ImGui_ImplVulkan_InitInfo init_info = {};
+    init_info.Instance = this->g_Instance;
+    init_info.PhysicalDevice = this->g_PhysicalDevice;
+    init_info.Device = this->g_Device;
+    init_info.QueueFamily = this->g_QueueFamily;
+    init_info.Queue = this->g_Queue;
+    init_info.PipelineCache = this->g_PipelineCache;
+    init_info.DescriptorPool = this->g_DescriptorPool;
+    init_info.Allocator = this->g_Allocator;
+    init_info.MinImageCount = this->g_MinImageCount;
+    init_info.ImageCount = this->windowVulkan->ImageCount;
+    init_info.CheckVkResultFn = KVK_checkVKRresult;
 
-	// Setup Dear ImGui context
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-
-	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
-	//ImGui::StyleColorsClassic();
-
-	// Setup Platform/Renderer bindings
-	ImGui_ImplSDL2_InitForVulkan(this->sdlWindow);
-	ImGui_ImplVulkan_InitInfo init_info = {};
-	init_info.Instance = this->g_Instance;
-	init_info.PhysicalDevice = this->g_PhysicalDevice;
-	init_info.Device = this->g_Device;
-	init_info.QueueFamily = this->g_QueueFamily;
-	init_info.Queue = this->g_Queue;
-	init_info.PipelineCache = this->g_PipelineCache;
-	init_info.DescriptorPool = this->g_DescriptorPool;
-	init_info.Allocator = this->g_Allocator;
-	init_info.MinImageCount = this->g_MinImageCount;
-	init_info.ImageCount = this->windowVulkan->ImageCount;
-	init_info.CheckVkResultFn = KVK_checkVKRresult;
-	ImGui_ImplVulkan_Init(&init_info, this->windowVulkan->RenderPass);
-
-	// Load Fonts
-	// - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
-	// - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
-	// - If the file cannot be loaded, the function will return NULL. Please handle those errors in your application (e.g. use an assertion, or display an error and quit).
-	// - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
-	// - Read 'misc/fonts/README.txt' for more instructions and details.
-	// - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
-	//io.Fonts->AddFontDefault();
-	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
-	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
-	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
-	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/ProggyTiny.ttf", 10.0f);
-	//ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
-	//IM_ASSERT(font != NULL);
+    this->managerUI = std::make_unique<UIManager>();
+    this->managerUI->init(this->sdlWindow, init_info, this->windowVulkan,
+      std::bind(&Kuplung::guiQuit, this),
+      std::bind(&Kuplung::guiNewScene, this));
+    this->doLog("[INIT] UI Manager initialized.");
+  }
 
 	// Upload Fonts
 	{
+    // Load Fonts
+    // - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
+    // - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
+    // - If the file cannot be loaded, the function will return NULL. Please handle those errors in your application (e.g. use an assertion, or display an error and quit).
+    // - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
+    // - Read 'misc/fonts/README.txt' for more instructions and details.
+    // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
+    //io.Fonts->AddFontDefault();
+    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
+    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
+    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
+    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/ProggyTiny.ttf", 10.0f);
+    //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
+    //IM_ASSERT(font != NULL);
+
 		// Use any command queue
 		VkCommandPool command_pool = this->windowVulkan->Frames[this->windowVulkan->FrameIndex].CommandPool;
 		VkCommandBuffer command_buffer = this->windowVulkan->Frames[this->windowVulkan->FrameIndex].CommandBuffer;
@@ -281,7 +217,6 @@ void Kuplung::onEvent(SDL_Event* ev) {
 
   this->gameIsRunning = this->managerControls->gameIsRunning;
 
-  // window resize
   if (ev->type == SDL_WINDOWEVENT) {
     switch (ev->window.event) {
       case SDL_WINDOWEVENT_SIZE_CHANGED:
@@ -715,4 +650,13 @@ void Kuplung::FramePresent(ImGui_ImplVulkanH_Window* wd) {
 	VkResult err = vkQueuePresentKHR(this->g_Queue, &info);
 	KVK_checkVKRresult(err);
 	wd->SemaphoreIndex = (wd->SemaphoreIndex + 1) % wd->ImageCount; // Now we can use the next set of semaphores
+}
+
+void Kuplung::guiQuit() {
+  this->gameIsRunning = false;
+}
+
+void Kuplung::guiNewScene() {
+  this->managerUI->setSceneSelectedModelObject(-1);
+  this->managerControls->keyPresset_TAB = false;
 }

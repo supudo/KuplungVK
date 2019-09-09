@@ -189,7 +189,7 @@
     <ClInclude Include="ui\dialogs\DialogStyle.hpp" />
     <ClInclude Include="ui\iconfonts\IconsFontAwesome.h" />
     <ClInclude Include="ui\iconfonts\IconsMaterialDesign.h" />
-    <ClInclude Include="ui\UIManager.h" />
+    <ClInclude Include="ui\UIManager.hpp" />
     <ClInclude Include="utilities\controls\ControlsManager.hpp" />
     <ClInclude Include="utilities\cpp\CPPUtilities.h" />
     <ClInclude Include="utilities\imgui\imconfig.h" />
@@ -222,6 +222,10 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="resources\fonts\fontawesome-webfont.ttf" />
+    <Font Include="resources\fonts\material-icons-regular.ttf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

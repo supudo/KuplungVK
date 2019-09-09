@@ -35,6 +35,9 @@
     <Filter Include="ui\iconfonts">
       <UniqueIdentifier>{be11cb4a-9c17-4004-950b-1ddec40e2922}</UniqueIdentifier>
     </Filter>
+    <Filter Include="resources\fonts">
+      <UniqueIdentifier>{2557bce6-77ec-4916-90b8-760e718694fc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -110,9 +113,6 @@
     <ClInclude Include="utilities\imgui\imgui_impl_vulkan.h">
       <Filter>utilities\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="ui\UIManager.h">
-      <Filter>ui</Filter>
-    </ClInclude>
     <ClInclude Include="ui\components\Log.h">
       <Filter>ui\components</Filter>
     </ClInclude>
@@ -150,6 +150,9 @@
       <Filter>settings</Filter>
     </ClInclude>
     <ClInclude Include="Kuplung.hpp" />
+    <ClInclude Include="ui\UIManager.hpp">
+      <Filter>ui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\KuplungVK_RecentFiles.ini">
@@ -183,5 +186,13 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="resources\fonts\material-icons-regular.ttf">
+      <Filter>resources\fonts</Filter>
+    </Font>
+    <Font Include="resources\fonts\fontawesome-webfont.ttf">
+      <Filter>resources\fonts</Filter>
+    </Font>
   </ItemGroup>
 </Project>

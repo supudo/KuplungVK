@@ -145,6 +145,10 @@ SET(KuplungVK_Misc
   resources/KuplungVK_RecentFilesImported.ini
   resources/KuplungVK_Settings.ini)
 
+SET(KuplungVK_Fonts
+  resources/fonts/fontawesome-webfont.ttf
+  resources/fonts/material-icons-regular.ttf)
+
 IF (Boost_FOUND AND GLM_FOUND AND SDL2_FOUND AND GLFW3_FOUND AND assimp_FOUND AND Protobuf_FOUND AND MINIZIP_FOUND)
   IF (APPLE)
     INCLUDE(CMakeToolsHelpers OPTIONAL)
