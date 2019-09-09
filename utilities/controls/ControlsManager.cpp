@@ -75,8 +75,6 @@ void ControlsManager::processEvents(const SDL_Event* ev) {
     }
 }
 
-#pragma mark - Private
-
 void ControlsManager::handleInput(const SDL_Event* ev) {
 	this->mouseWheel = {};
 	this->mouseWheel.x = 0;

@@ -9,6 +9,7 @@
 #ifdef WIN32
 #include <shlobj.h>
 #endif
+#include "../utilities/cpp/CPPUtilities.h"
 
 namespace fs = boost::filesystem;
 
@@ -86,7 +87,7 @@ void FontsList::loadFontsWindows() {
     fontsFolder = szPath;
 #  else
     std::wstring folderLocalAppDataW = szPath;
-    fontsFolder = std::string(folderLocalAppDataW.begin(), folderLocalAppDataW.end());
+    fontsFolder = CPPUtilities::convert_to_string(folderLocalAppDataW);
 #  endif
     fontsFolder += "\\fonts";
     fs::path currentPath(fontsFolder);

@@ -4,13 +4,9 @@
 #include <mutex>
 #include <stdexcept>
 
-#pragma mark - Cleanup
-
 ConfigUtils::~ConfigUtils() {
   this->configData = {};
 }
-
-#pragma mark - Init
 
 void ConfigUtils::init(std::string const& appFolder) {
   this->configFile = appFolder + "/KuplungVK_Settings.ini";
@@ -19,8 +15,6 @@ void ConfigUtils::init(std::string const& appFolder) {
   this->regex_equalsSign = "=";
   this->readFile();
 }
-
-#pragma mark - Public
 
 void ConfigUtils::saveSettings() {
 #ifdef _WIN32
@@ -46,8 +40,6 @@ void ConfigUtils::saveSettings() {
   out.close();
 }
 
-#pragma mark - Read
-
 bool ConfigUtils::readBool(std::string const& configKey) {
   return this->configData[configKey] == "true";
 }
@@ -71,8 +63,6 @@ float ConfigUtils::readFloat(std::string const& configKey) {
 std::string ConfigUtils::readString(std::string const& configKey) {
   return this->configData[configKey];
 }
-
-#pragma mark - Write
 
 void ConfigUtils::writeBool(std::string const& configKey, bool const& configValue) {
   this->configData[configKey] = configValue ? "true" : "false";
@@ -243,8 +233,6 @@ std::vector<FBEntity> ConfigUtils::loadRecentFilesImported() {
   }
   return recentFiles;
 }
-
-#pragma mark - Private
 
 void ConfigUtils::readFile() {
   std::FILE* fp = std::fopen(this->configFile.c_str(), "rb");

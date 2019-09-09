@@ -1,5 +1,9 @@
 #include "Kuplung.hpp"
 
+#ifdef _WIN32
+#include  <stdlib.h>
+#endif
+
 Kuplung::Kuplung() {
   this->g_Allocator = NULL;
   this->g_Instance = VK_NULL_HANDLE;
@@ -47,7 +51,7 @@ int Kuplung::run() {
   ImVec4 vkClearColor = ImVec4(Settings::Instance()->guiClearColor.r, Settings::Instance()->guiClearColor.g, Settings::Instance()->guiClearColor.b, Settings::Instance()->guiClearColor.w);
 
   while (this->gameIsRunning) {
-    float fts = (1.0 * std::clock() / CLOCKS_PER_SEC);
+    double fts = (1.0 * std::clock() / CLOCKS_PER_SEC);
 
     while (SDL_PollEvent(&ev)) {
       this->onEvent(&ev);
@@ -80,7 +84,7 @@ int Kuplung::run() {
 
     if (Settings::Instance()->showFrameRenderTime) {
       if (frameCounter > ImGui::GetIO().Framerate) {
-        float fte = (1.0 * std::clock() / CLOCKS_PER_SEC);
+        double fte = (1.0 * std::clock() / CLOCKS_PER_SEC);
         Settings::Instance()->funcDoLog(Settings::Instance()->string_format("[TIMINGS] FRAME draw time : %f ms (%f seconds)", (fte - fts) * 1000, (fte - fts)));
         frameCounter = 1;
       }
@@ -251,8 +255,11 @@ void Kuplung::doLog(const std::string& message) {
 void Kuplung::initFolders() {
   std::string homeFolder(""), iniFolder("");
 #ifdef _WIN32
-  char const* hdrive = getenv("HOMEDRIVE");
-  char const* hpath = getenv("HOMEPATH");
+  char* hdrive;
+  char* hpath;
+  size_t len;
+  (void)_dupenv_s(&hdrive, &len, "HOMEDRIVE");
+  (void)_dupenv_s(&hpath, &len, "HOMEPATH");
   homeFolder = std::string(hdrive) + std::string(hpath);
 
   TCHAR szPath[MAX_PATH];
@@ -262,7 +269,7 @@ void Kuplung::initFolders() {
     folderLocalAppData = szPath;
 #  else
     std::wstring folderLocalAppDataW = szPath;
-    folderLocalAppData = std::string(folderLocalAppDataW.begin(), folderLocalAppDataW.end());
+    folderLocalAppData = CPPUtilities::convert_to_string(folderLocalAppDataW);
 #  endif
     //std::string folderLocalAppData(szPath);
     folderLocalAppData += "\\supudo.net";
