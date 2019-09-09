@@ -160,7 +160,7 @@ std::string Settings::prettyBbytes(uint64_t bytes) {
   suffixes[4] = "TB";
   suffixes[5] = "PB";
   suffixes[6] = "EB";
-  uint s = 0;
+  int s = 0;
   double count = bytes;
   while (count >= 1024 && s < 7) {
     s++;
