@@ -36,7 +36,7 @@ void DialogOptions::showOptionsWindow(ImGuiStyle* ref, DialogStyle* wStyle, bool
     ImGui::Unindent();
   }
 
-  if (ImGui::CollapsingHeader("Rendering")) {
+  if (ImGui::CollapsingHeader("Rendering (restart is required)")) {
     ImGui::Indent();
     ImGui::Text("Select GPU:");
     ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.95);

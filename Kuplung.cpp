@@ -340,22 +340,19 @@ void Kuplung::selectBestGPU() {
   err = vkEnumeratePhysicalDevices(this->g_Instance, &gpu_count, gpus);
   KVK_checkVKRresult(err);
 
-  int32_t ddsel = -1;
-  VkPhysicalDevice desired_device;
+  uint32_t ddsel = -1;
+  if (Settings::Instance()->SelectedGPU < gpu_count)
+    ddsel = Settings::Instance()->SelectedGPU;
   std::vector<VkPhysicalDevice> gpu_devices = std::vector<VkPhysicalDevice>(gpu_count);
   err = vkEnumeratePhysicalDevices(this->g_Instance, &gpu_count, gpu_devices.data());
   for (const VkPhysicalDevice& device : gpu_devices) {
     auto props = VkPhysicalDeviceProperties{};
     vkGetPhysicalDeviceProperties(device, &props);
-    if (props.deviceType == VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
-      desired_device = device;
+    if (props.deviceType == VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
       ddsel += 1;
-    }
     else if (props.deviceType == VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU) {
-      if (ddsel == -1) {
-        desired_device = device;
+      if (ddsel == -1)
         ddsel += 1;
-      }
     }
     else
       doLog("No suitable GPU found!");
@@ -379,7 +376,8 @@ void Kuplung::selectBestGPU() {
     Settings::Instance()->AvailableGPUs.push_back(deviceName + " : " + Settings::Instance()->prettyBbytes(max_heap));
   }
 
-  Settings::Instance()->SelectedGPU = ddsel;
+  if (Settings::Instance()->SelectedGPU < 0)
+    Settings::Instance()->SelectedGPU = ddsel;
 
   // If a number > 1 of GPUs got reported, you should find the best fit GPU for your purpose
   // e.g. VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU if available, or with the greatest memory available, etc.
