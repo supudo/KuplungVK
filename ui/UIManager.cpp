@@ -1,4 +1,4 @@
-#include "UIManager.h"
+#include "UIManager.hpp"
 #include "../settings/Settings.h"
 
 void UIManager::init(SDL_Window* sdlWindow, ImGui_ImplVulkan_InitInfo init_info, ImGui_ImplVulkanH_Window* wd) {
@@ -45,8 +45,6 @@ void UIManager::init(SDL_Window* sdlWindow, ImGui_ImplVulkan_InitInfo init_info,
 }
 
 void UIManager::renderStart() {
-	Settings::Instance()->funcDoLog(Settings::Instance()->string_format("[UIManager] renderStart..."));
-
   /*if (Settings::Instance()->logDebugInfo)
     this->dialogLog();*/
 }
@@ -56,6 +54,11 @@ void UIManager::renderEnd() {
 	memcpy(&wd->ClearValue.color.float32[0], &this->guiClearColor, 4 * sizeof(float));
 	FrameRender(wd);
 	FramePresent(wd);*/
+}
+
+bool UIManager::processEvent(SDL_Event* event) {
+  //return ImGui_ImplVulkan_ProcessEvent(event);
+  return true;
 }
 
 void UIManager::doLog(const std::string& message) {

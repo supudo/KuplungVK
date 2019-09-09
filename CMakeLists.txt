@@ -13,11 +13,11 @@ ELSE(CMAKE_BUILD_TYPE STREQUAL Debug)
   SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/cmake-build/Release")
 ENDIF(CMAKE_BUILD_TYPE STREQUAL Debug)
 
-# Apple CMake file
-
+ADD_DEFINITIONS(-DDEBUG)
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -stdlib=libc++ -Os")
 
 #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DIMGUI_IMPL_OPENGL_LOADER_CUSTOM")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DKVK_VulkanDebug")
 
 IF((CMAKE_CXX_COMPILER_ID MATCHES GNU) OR (CMAKE_CXX_COMPILER_ID MATCHES Clang))
   SET(CMAKE_CXX_FLAGS_DEBUG "-O0 -g3")
@@ -100,6 +100,7 @@ INCLUDE_DIRECTORIES(.)
 ADD_DEFINITIONS(-DGLM_ENABLE_EXPERIMENTAL)
 
 SET(SOURCE_FILES
+  utilities/ivulkan/VulkanIncludes.h
   utilities/imgui/imconfig.h
   utilities/imgui/imgui_demo.cpp
   utilities/imgui/imgui_draw.cpp
@@ -114,21 +115,35 @@ SET(SOURCE_FILES
   utilities/imgui/imstb_rectpack.h
   utilities/imgui/imstb_textedit.h
   utilities/imgui/imstb_truetype.h
+  utilities/controls/ControlsManager.hpp
+  utilities/controls/ControlsManager.cpp
   settings/SettingsStructs.h
   settings/Settings.h
   settings/Settings.cpp
-  ui/UIManager.h
+  settings/ConfigUtils.hpp
+  settings/ConfigUtils.cpp
+  settings/FontsList.hpp
+  settings/FontsList.cpp
+  ui/UIManager.hpp
   ui/UIManager.cpp
+  ui/iconfonts/IconsFontAwesome.h
+  ui/iconfonts/IconsMaterialDesign.h
   ui/components/Log.h
   ui/components/Log.cpp
+  ui/dialogs/DialogOptions.hpp
+  ui/dialogs/DialogOptions.cpp
+  ui/dialogs/DialogStyle.hpp
+  ui/dialogs/DialogStyle.cpp
+  Kuplung.hpp
+  Kuplung.cpp
   main.cpp)
 
 SET(KuplungVK_Misc
   resources/KuplungVK.icns
   resources/KuplungVK.ico
-  resources/Kuplung_RecentFiles.ini
-  resources/Kuplung_RecentFilesImported.ini
-  resources/Kuplung_Settings.ini)
+  resources/KuplungVK_RecentFiles.ini
+  resources/KuplungVK_RecentFilesImported.ini
+  resources/KuplungVK_Settings.ini)
 
 IF (Boost_FOUND AND GLM_FOUND AND SDL2_FOUND AND GLFW3_FOUND AND assimp_FOUND AND Protobuf_FOUND AND MINIZIP_FOUND)
   IF (APPLE)
@@ -138,12 +153,12 @@ IF (Boost_FOUND AND GLM_FOUND AND SDL2_FOUND AND GLFW3_FOUND AND assimp_FOUND AN
 
     # Misc Files
     EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/resources/" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.app/Contents/Resources/")
-    FILE(GLOB Kuplung_Ini_Files "resources/*.ini")
-    FILE(COPY ${Kuplung_Ini_Files} DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.app/Contents/Resources/")
-    FILE(GLOB Kuplung_Icns_Files "resources/*.icns")
-    FILE(COPY ${Kuplung_Icns_Files} DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.app/Contents/Resources/")
-    FILE(GLOB Kuplung_Ico_Files "resources/*.ico")
-    FILE(COPY ${Kuplung_Ico_Files} DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.app/Contents/Resources/")
+    FILE(GLOB KuplungVK_Ini_Files "resources/*.ini")
+    FILE(COPY ${KuplungVK_Ini_Files} DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.app/Contents/Resources/")
+    FILE(GLOB KuplungVK_Icns_Files "resources/*.icns")
+    FILE(COPY ${KuplungVK_Icns_Files} DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.app/Contents/Resources/")
+    FILE(GLOB KuplungVK_Ico_Files "resources/*.ico")
+    FILE(COPY ${KuplungVK_Ico_Files} DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.app/Contents/Resources/")
 
     SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_SOURCE_DIR}/Info.plist")
 

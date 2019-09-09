@@ -8,6 +8,7 @@
 #include <memory>
 #include <functional>
 #include "SettingsStructs.h"
+#include "ConfigUtils.hpp"
 
 class Settings {
 public:
@@ -16,15 +17,25 @@ public:
 	void saveSettings();
 	std::string appFolder();
 	void setLogFunc(const std::function<void(std::string)>& doLog);
+  std::string prettyBbytes(uint64_t bytes);
 
 	std::function<void(std::string)> funcDoLog;
 
+  std::string UIFontFile, newLineDelimiter;
+
   int SDL_Window_Flags;
-	int MainWindow_Width, MainWindow_Height;
+	int SDL_Window_Width, SDL_Window_Height;
 	int frameLog_Width, frameLog_Height;
 
+  int SelectedGPU;
+  int Consumption_Interval_CPU, Consumption_Interval_Memory;
+
+  int UIFontFileIndex;
+  float UIFontSize;
+
   bool logDebugInfo;
-	
+  bool showFrameRenderTime;
+
 	std::string ApplicationConfigurationFolder, currentFolder;
 	int Setting_CurrentDriveIndex, Setting_SelectedDriveIndex;
 	std::vector<std::string> hddDriveList;
@@ -48,4 +59,5 @@ private:
 	Settings(Settings const&) {}
 	Settings& operator=(Settings const&);
 	static Settings* m_pInstance;
+  std::unique_ptr<ConfigUtils> cfgUtils;
 };

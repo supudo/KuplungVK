@@ -17,15 +17,16 @@
 #include "components/Log.h"
 
 class UIManager {
-public: 
+public:
 	void init(SDL_Window* sdlWindow, ImGui_ImplVulkan_InitInfo init_info, ImGui_ImplVulkanH_Window* wd);
 	void renderStart();
 	void renderEnd();
-	
+  bool processEvent(SDL_Event *event);
+
 	void doLog(const std::string& message);
 
 	bool Show_ImGui_DemoWindow, Show_ImGui_AnotherWindow;
-	
+
 private:
 	ImVec4 guiClearColor;
 

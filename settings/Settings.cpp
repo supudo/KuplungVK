@@ -30,15 +30,30 @@ Settings* Settings::Instance() {
 }
 
 void Settings::initSettings(const std::string& iniFolder) {
+  m_pInstance->cfgUtils = std::make_unique<ConfigUtils>();
+  m_pInstance->cfgUtils->init(iniFolder);
+
   m_pInstance->guiClearColor = {70.0f / 255.0f, 70.0f / 255.0f, 70.0f / 255.0f, 255.0f / 255.0f};
 
-  m_pInstance->SDL_Window_Flags = SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
-	m_pInstance->MainWindow_Width = 1400;
-	m_pInstance->MainWindow_Height = 800;
-	m_pInstance->frameLog_Width = 300;
-	m_pInstance->frameLog_Height = 200;
+  m_pInstance->SelectedGPU = m_pInstance->cfgUtils->readInt("SelectedGPU");
 
-  m_pInstance->logDebugInfo = true;
+  m_pInstance->SDL_Window_Flags = SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
+  m_pInstance->SDL_Window_Width = m_pInstance->cfgUtils->readInt("SDL_Window_Width");
+  m_pInstance->SDL_Window_Height = m_pInstance->cfgUtils->readInt("SDL_Window_Height");
+
+  printf("--------- %i - %i", m_pInstance->SDL_Window_Width, m_pInstance->SDL_Window_Height);
+
+  m_pInstance->frameLog_Width = m_pInstance->cfgUtils->readInt("frameLog_Width");
+  m_pInstance->frameLog_Height = m_pInstance->cfgUtils->readInt("frameLog_Height");
+
+  m_pInstance->UIFontFileIndex = m_pInstance->cfgUtils->readInt("UIFontFileIndex");
+  m_pInstance->UIFontSize = m_pInstance->cfgUtils->readFloat("UIFontSize");
+  m_pInstance->UIFontFile = m_pInstance->cfgUtils->readString("UIFontFile");
+
+  m_pInstance->logDebugInfo = m_pInstance->cfgUtils->readBool("logDebugInfo");
+  m_pInstance->showFrameRenderTime = m_pInstance->cfgUtils->readBool("showFrameRenderTime");
+  m_pInstance->Consumption_Interval_CPU = m_pInstance->cfgUtils->readInt("Consumption_Interval_CPU");
+  m_pInstance->Consumption_Interval_Memory = m_pInstance->cfgUtils->readInt("Consumption_Interval_Memory");
 
 #ifdef _WIN32
 	m_pInstance->Setting_CurrentDriveIndex = 0;
@@ -62,6 +77,30 @@ void Settings::initSettings(const std::string& iniFolder) {
 	}
 #endif
 	m_pInstance->ApplicationConfigurationFolder = iniFolder;
+
+#ifdef _WIN32
+  m_pInstance->newLineDelimiter = "\r\n";
+#elif defined macintosh // OS 9
+  m_pInstance->newLineDelimiter = "\r";
+#else
+  m_pInstance->newLineDelimiter = "\n";
+#endif
+}
+
+std::string Settings::appFolder() {
+#ifdef __APPLE__
+  CFBundleRef mainBundle = CFBundleGetMainBundle();
+  CFURLRef resourcesURL = CFBundleCopyResourcesDirectoryURL(mainBundle);
+  char folder[PATH_MAX];
+  if (!CFURLGetFileSystemRepresentation(resourcesURL, TRUE, (UInt8*)folder, PATH_MAX))
+    printf("Can't open bundle folder!\n");
+  CFRelease(resourcesURL);
+  return std::string(folder);
+#elif _WIN32
+  return boost::filesystem::current_path().string() + "/resources";
+#else
+  return boost::filesystem::current_path().string() + "/resources";
+#endif
 }
 
 #ifdef __APPLE__
@@ -84,6 +123,51 @@ std::string Settings::string_format(const std::string& fmt_str, ...) {
 }
 #endif
 
+void Settings::saveSettings() {
+  this->cfgUtils->writeString("currentFolder", this->currentFolder);
+
+  this->cfgUtils->writeBool("logDebugInfo", this->logDebugInfo);
+  this->cfgUtils->writeBool("showFrameRenderTime", this->showFrameRenderTime);
+
+  this->cfgUtils->writeInt("SelectedGPU", this->SelectedGPU);
+
+  this->cfgUtils->writeInt("frameLog_Width", this->frameLog_Width);
+  this->cfgUtils->writeInt("frameLog_Height", this->frameLog_Height);
+
+  this->cfgUtils->writeInt("SDL_Window_Width", this->SDL_Window_Width);
+  this->cfgUtils->writeInt("SDL_Window_Height", this->SDL_Window_Height);
+
+  this->cfgUtils->writeInt("UIFontFileIndex", this->UIFontFileIndex);
+  this->cfgUtils->writeFloat("UIFontSize", this->UIFontSize);
+  this->cfgUtils->writeString("UIFontFile", this->UIFontFile);
+
+  this->cfgUtils->writeInt("Consumption_Interval_CPU", this->Consumption_Interval_CPU);
+  this->cfgUtils->writeInt("Consumption_Interval_Memory", this->Consumption_Interval_Memory);
+
+  this->cfgUtils->saveSettings();
+}
+
 void Settings::setLogFunc(const std::function<void(std::string)>& doLog) {
 	this->funcDoLog = doLog;
+}
+
+std::string Settings::prettyBbytes(uint64_t bytes) {
+  const char* suffixes[7];
+  suffixes[0] = "B";
+  suffixes[1] = "KB";
+  suffixes[2] = "MB";
+  suffixes[3] = "GB";
+  suffixes[4] = "TB";
+  suffixes[5] = "PB";
+  suffixes[6] = "EB";
+  uint s = 0;
+  double count = bytes;
+  while (count >= 1024 && s < 7) {
+    s++;
+    count /= 1024;
+  }
+  if (count - floor(count) == 0.0)
+    return Settings::Instance()->string_format("%d %s", (int)count, suffixes[s]);
+  else
+    return Settings::Instance()->string_format("%.1f %s", count, suffixes[s]);
 }
