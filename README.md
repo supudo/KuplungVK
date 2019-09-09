@@ -1,6 +1,6 @@
 # KuplungVK
 
-Vulkan Model Viewer based on [Kuplung](https://github.com/supudo/Kuplung-).
+Vulkan Model Viewer based on [Kuplung](https://github.com/supudo/Kuplung).
 
 #### Using/Including
 
@@ -8,7 +8,8 @@ Vulkan Model Viewer based on [Kuplung](https://github.com/supudo/Kuplung-).
 - [Boost](http://www.boost.org/)
 
 #### IDE
-Visual Studio 2019
+Visual Studio 2019 (WIN)
+Visual Studio Code (OSX)
 
 #### License
 
