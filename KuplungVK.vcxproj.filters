@@ -23,6 +23,18 @@
     <Filter Include="utilities\cpp">
       <UniqueIdentifier>{c5dbd711-5cbb-4710-bceb-63c3bb27fba2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="utilities\controls">
+      <UniqueIdentifier>{66d226e8-7b47-4839-b174-7caf06f3f453}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utilities\ivulkan">
+      <UniqueIdentifier>{f28db430-aac1-486e-9b0e-304af099b442}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui\dialogs">
+      <UniqueIdentifier>{66257dbd-57fa-46ba-89f7-b79b1c8e0723}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui\iconfonts">
+      <UniqueIdentifier>{be11cb4a-9c17-4004-950b-1ddec40e2922}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -56,6 +68,22 @@
     <ClCompile Include="utilities\cpp\CPPUtilities.cpp">
       <Filter>utilities\cpp</Filter>
     </ClCompile>
+    <ClCompile Include="utilities\controls\ControlsManager.cpp">
+      <Filter>utilities\controls</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\dialogs\DialogStyle.cpp">
+      <Filter>ui\dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\dialogs\DialogOptions.cpp">
+      <Filter>ui\dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="settings\ConfigUtils.cpp">
+      <Filter>settings</Filter>
+    </ClCompile>
+    <ClCompile Include="settings\FontsList.cpp">
+      <Filter>settings</Filter>
+    </ClCompile>
+    <ClCompile Include="Kuplung.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utilities\imgui\imgui_internal.h">
@@ -97,6 +125,31 @@
     <ClInclude Include="utilities\cpp\CPPUtilities.h">
       <Filter>utilities\cpp</Filter>
     </ClInclude>
+    <ClInclude Include="utilities\controls\ControlsManager.hpp">
+      <Filter>utilities\controls</Filter>
+    </ClInclude>
+    <ClInclude Include="utilities\ivulkan\VulkanIncludes.h">
+      <Filter>utilities\ivulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\dialogs\DialogStyle.hpp">
+      <Filter>ui\dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\dialogs\DialogOptions.hpp">
+      <Filter>ui\dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\iconfonts\IconsMaterialDesign.h">
+      <Filter>ui\iconfonts</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\iconfonts\IconsFontAwesome.h">
+      <Filter>ui\iconfonts</Filter>
+    </ClInclude>
+    <ClInclude Include="settings\FontsList.hpp">
+      <Filter>settings</Filter>
+    </ClInclude>
+    <ClInclude Include="settings\ConfigUtils.hpp">
+      <Filter>settings</Filter>
+    </ClInclude>
+    <ClInclude Include="Kuplung.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\KuplungVK_RecentFiles.ini">

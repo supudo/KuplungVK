@@ -157,10 +157,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Kuplung.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="settings\ConfigUtils.cpp" />
+    <ClCompile Include="settings\FontsList.cpp" />
     <ClCompile Include="settings\Settings.cpp" />
     <ClCompile Include="ui\components\Log.cpp" />
+    <ClCompile Include="ui\dialogs\DialogOptions.cpp" />
+    <ClCompile Include="ui\dialogs\DialogStyle.cpp" />
     <ClCompile Include="ui\UIManager.cpp" />
+    <ClCompile Include="utilities\controls\ControlsManager.cpp" />
     <ClCompile Include="utilities\cpp\CPPUtilities.cpp" />
     <ClCompile Include="utilities\imgui\imgui.cpp" />
     <ClCompile Include="utilities\imgui\imgui_demo.cpp" />
@@ -170,10 +176,18 @@
     <ClCompile Include="utilities\imgui\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Kuplung.hpp" />
+    <ClInclude Include="settings\ConfigUtils.hpp" />
+    <ClInclude Include="settings\FontsList.hpp" />
     <ClInclude Include="settings\Settings.h" />
     <ClInclude Include="settings\SettingsStructs.h" />
     <ClInclude Include="ui\components\Log.h" />
+    <ClInclude Include="ui\dialogs\DialogOptions.hpp" />
+    <ClInclude Include="ui\dialogs\DialogStyle.hpp" />
+    <ClInclude Include="ui\iconfonts\IconsFontAwesome.h" />
+    <ClInclude Include="ui\iconfonts\IconsMaterialDesign.h" />
     <ClInclude Include="ui\UIManager.h" />
+    <ClInclude Include="utilities\controls\ControlsManager.hpp" />
     <ClInclude Include="utilities\cpp\CPPUtilities.h" />
     <ClInclude Include="utilities\imgui\imconfig.h" />
     <ClInclude Include="utilities\imgui\imgui.h" />
@@ -183,6 +197,7 @@
     <ClInclude Include="utilities\imgui\imstb_rectpack.h" />
     <ClInclude Include="utilities\imgui\imstb_textedit.h" />
     <ClInclude Include="utilities\imgui\imstb_truetype.h" />
+    <ClInclude Include="utilities\ivulkan\VulkanIncludes.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />
