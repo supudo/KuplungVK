@@ -134,6 +134,8 @@ SET(SOURCE_FILES
   ui/dialogs/DialogOptions.cpp
   ui/dialogs/DialogStyle.hpp
   ui/dialogs/DialogStyle.cpp
+  rendering/RenderingManager.hpp
+  rendering/RenderingManager.cpp
   Kuplung.hpp
   Kuplung.cpp
   main.cpp)

@@ -1,11 +1,3 @@
-//
-// Kuplung.hpp
-// Kuplung
-//
-//  Created by Sergey Petrov on 11/13/15.
-//  Copyright © 2015 supudo.net. All rights reserved.
-//
-
 #ifndef Kuplung_hpp
 #define Kuplung_hpp
 
@@ -33,6 +25,7 @@
 #include "settings/Settings.h"
 #include "ui/UIManager.hpp"
 #include "utilities/controls/ControlsManager.hpp"
+#include "rendering/RenderingManager.hpp"
 
 class Kuplung {
 public:
@@ -89,6 +82,7 @@ private:
   // Customs
   std::unique_ptr<UIManager> managerUI;
   std::unique_ptr<ControlsManager> managerControls;
+  std::unique_ptr<RenderingManager> managerRendering;
 };
 
 #endif /* Kuplung_hpp */

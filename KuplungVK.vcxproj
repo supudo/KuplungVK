@@ -162,6 +162,7 @@
   <ItemGroup>
     <ClCompile Include="Kuplung.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="rendering\RenderingManager.cpp" />
     <ClCompile Include="settings\ConfigUtils.cpp" />
     <ClCompile Include="settings\FontsList.cpp" />
     <ClCompile Include="settings\Settings.cpp" />
@@ -180,6 +181,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Kuplung.hpp" />
+    <ClInclude Include="rendering\RenderingManager.hpp" />
     <ClInclude Include="settings\ConfigUtils.hpp" />
     <ClInclude Include="settings\FontsList.hpp" />
     <ClInclude Include="settings\Settings.h" />

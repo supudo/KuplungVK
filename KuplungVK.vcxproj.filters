@@ -38,6 +38,9 @@
     <Filter Include="resources\fonts">
       <UniqueIdentifier>{2557bce6-77ec-4916-90b8-760e718694fc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="rendering">
+      <UniqueIdentifier>{a9bc85b1-253d-4234-97da-133b0f7882a1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -87,6 +90,9 @@
       <Filter>settings</Filter>
     </ClCompile>
     <ClCompile Include="Kuplung.cpp" />
+    <ClCompile Include="rendering\RenderingManager.cpp">
+      <Filter>rendering</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utilities\imgui\imgui_internal.h">
@@ -152,6 +158,9 @@
     <ClInclude Include="Kuplung.hpp" />
     <ClInclude Include="ui\UIManager.hpp">
       <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="rendering\RenderingManager.hpp">
+      <Filter>rendering</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

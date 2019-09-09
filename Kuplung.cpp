@@ -205,10 +205,14 @@ bool Kuplung::init() {
 		ImGui_ImplVulkan_DestroyFontUploadObjects();
 	}
 
+  this->managerRendering = std::make_unique<RenderingManager>();
+  this->managerRendering->init();
+
   return true;
 }
 
 void Kuplung::renderScene() {
+  this->managerRendering->render();
 }
 
 void Kuplung::onEvent(SDL_Event* ev) {
