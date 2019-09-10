@@ -12,7 +12,7 @@
 #include <regex>
 #include <string>
 #include <vector>
-#include "../../utilities/imgui/imgui.h"
+#include "utilities/imgui/imgui.h"
 
 class DialogStyle {
 public:

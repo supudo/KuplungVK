@@ -7,7 +7,7 @@
 //
 
 #include "DialogStyle.hpp"
-#include "../../settings/Settings.h"
+#include "settings/Settings.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/filesystem.hpp>

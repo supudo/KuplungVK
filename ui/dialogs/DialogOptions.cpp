@@ -1,8 +1,8 @@
 #include "DialogOptions.hpp"
-#include "../../settings/Settings.h"
-#include "../iconfonts/IconsFontAwesome.h"
-#include "../iconfonts/IconsMaterialDesign.h"
-#include "../../utilities/imgui/imgui_internal.h"
+#include "settings/Settings.h"
+#include "ui/iconfonts/IconsFontAwesome.h"
+#include "ui/iconfonts/IconsMaterialDesign.h"
+#include "utilities/imgui/imgui_internal.h"
 
 void DialogOptions::init() {
   this->fontLister = std::make_unique<FontsList>();

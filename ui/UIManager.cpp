@@ -1,7 +1,7 @@
 #include "UIManager.hpp"
-#include "../settings/Settings.h"
-#include "iconfonts/IconsFontAwesome.h"
-#include "iconfonts/IconsMaterialDesign.h"
+#include "settings/Settings.h"
+#include "ui/iconfonts/IconsFontAwesome.h"
+#include "ui/iconfonts/IconsMaterialDesign.h"
 
 UIManager::UIManager() {
   this->showDialogStyle = false;

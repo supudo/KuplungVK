@@ -1,7 +1,7 @@
 #ifndef ControlsManager_hpp
 #define ControlsManager_hpp
 
-#include "../ivulkan/VulkanIncludes.h"
+#include "utilities/ivulkan/VulkanIncludes.h"
 
 struct ControlPoint {
   int x, y;

@@ -23,7 +23,7 @@
 #include <SDL2/SDL_vulkan.h>
 #include <vulkan/vulkan.hpp>
 
-#include "../../settings/Settings.h"
+#include "settings/Settings.h"
 
 static void KVK_checkVKRresult(VkResult err) {
 	if (err == 0)

@@ -1,10 +1,10 @@
 #ifndef DialogOptions_hpp
 #define DialogOptions_hpp
 
-#include "../../settings/FontsList.hpp"
-#include "../../settings/Settings.h"
+#include "settings/FontsList.hpp"
+#include "settings/Settings.h"
 #include "DialogStyle.hpp"
-#include "../../utilities/imgui/imgui.h"
+#include "utilities/imgui/imgui.h"
 
 class DialogOptions {
 public:

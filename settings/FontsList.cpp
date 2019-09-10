@@ -9,7 +9,7 @@
 #ifdef WIN32
 #include <shlobj.h>
 #endif
-#include "../utilities/cpp/CPPUtilities.h"
+#include "utilities/cpp/CPPUtilities.h"
 
 namespace fs = boost::filesystem;
 
