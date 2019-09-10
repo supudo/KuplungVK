@@ -38,6 +38,7 @@ void Settings::initSettings(const std::string& iniFolder) {
   m_pInstance->guiClearColor = {70.0f / 255.0f, 70.0f / 255.0f, 70.0f / 255.0f, 255.0f / 255.0f};
 
   m_pInstance->SelectedGPU = m_pInstance->cfgUtils->readInt("SelectedGPU");
+  m_pInstance->VulkanDebugMode = m_pInstance->cfgUtils->readBool("VulkanDebugMode");
 
   m_pInstance->SDL_Window_Flags = SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
   m_pInstance->SDL_Window_Width = m_pInstance->cfgUtils->readInt("SDL_Window_Width");
@@ -133,6 +134,7 @@ void Settings::saveSettings() {
   this->cfgUtils->writeBool("showFrameRenderTime", this->showFrameRenderTime);
 
   this->cfgUtils->writeInt("SelectedGPU", this->SelectedGPU);
+  this->cfgUtils->writeBool("VulkanDebugMode", this->VulkanDebugMode);
 
   this->cfgUtils->writeInt("frameLog_Width", this->frameLog_Width);
   this->cfgUtils->writeInt("frameLog_Height", this->frameLog_Height);

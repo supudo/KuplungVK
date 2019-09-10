@@ -331,14 +331,6 @@ void Kuplung::initFolders() {
   Settings::Instance()->initSettings(iniFolder);
 }
 
-#ifdef IMGUI_VULKAN_DEBUG_REPORT
-VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType, uint64_t object, size_t location, int32_t messageCode, const char* pLayerPrefix, const char* pMessage, void* pUserData) {
-	(void)flags; (void)object; (void)location; (void)messageCode; (void)pUserData; (void)pLayerPrefix; // Unused arguments
-	fprintf(stderr, "[KuplungVK] ObjectType: %i\nMessage: %s\n\n", objectType, pMessage);
-	return VK_FALSE;
-}
-#endif // IMGUI_VULKAN_DEBUG_REPORT
-
 void Kuplung::selectBestGPU() {
   VkResult err;
 
@@ -422,42 +414,44 @@ void Kuplung::SetupVulkan(const char** extensions, uint32_t extensions_count) {
 		create_info.enabledExtensionCount = extensions_count;
 		create_info.ppEnabledExtensionNames = extensions;
 
-#ifdef IMGUI_VULKAN_DEBUG_REPORT
-		// Enabling multiple validation layers grouped as LunarG standard validation
-		const char* layers[] = { "VK_LAYER_LUNARG_standard_validation" };
-		create_info.enabledLayerCount = 1;
-		create_info.ppEnabledLayerNames = layers;
 
-		// Enable debug report extension (we need additional storage, so we duplicate the user array to add our new extension to it)
-		const char** extensions_ext = (const char**)malloc(sizeof(const char*) * (extensions_count + 1));
-		memcpy(extensions_ext, extensions, extensions_count * sizeof(const char*));
-		extensions_ext[extensions_count] = "VK_EXT_debug_report";
-		create_info.enabledExtensionCount = extensions_count + 1;
-		create_info.ppEnabledExtensionNames = extensions_ext;
+    if (Settings::Instance()->VulkanDebugMode) {
+      // Enabling multiple validation layers grouped as LunarG standard validation
+      const char* layers[] = { "VK_LAYER_LUNARG_standard_validation" };
+      create_info.enabledLayerCount = 1;
+      create_info.ppEnabledLayerNames = layers;
 
-		// Create Vulkan Instance
-		err = vkCreateInstance(&create_info, this->g_Allocator, &this->g_Instance);
-		KVK_checkVKRresult(err);
-		free(extensions_ext);
+      // Enable debug report extension (we need additional storage, so we duplicate the user array to add our new extension to it)
+      const char** extensions_ext = (const char**)malloc(sizeof(const char*) * (extensions_count + 1));
+      memcpy(extensions_ext, extensions, extensions_count * sizeof(const char*));
+      extensions_ext[extensions_count] = "VK_EXT_debug_report";
+      create_info.enabledExtensionCount = extensions_count + 1;
+      create_info.ppEnabledExtensionNames = extensions_ext;
 
-		// Get the function pointer (required for any extensions)
-		auto vkCreateDebugReportCallbackEXT = (PFN_vkCreateDebugReportCallbackEXT)vkGetInstanceProcAddr(this->g_Instance, "vkCreateDebugReportCallbackEXT");
-		IM_ASSERT(vkCreateDebugReportCallbackEXT != NULL);
+      // Create Vulkan Instance
+      err = vkCreateInstance(&create_info, this->g_Allocator, &this->g_Instance);
+      KVK_checkVKRresult(err);
+      free(extensions_ext);
 
-		// Setup the debug report callback
-		VkDebugReportCallbackCreateInfoEXT debug_report_ci = {};
-		debug_report_ci.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
-		debug_report_ci.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT | VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT;
-		debug_report_ci.pfnCallback = debug_report;
-		debug_report_ci.pUserData = NULL;
-		err = vkCreateDebugReportCallbackEXT(this->g_Instance, &debug_report_ci, this->g_Allocator, &this->g_DebugReport);
-		KVK_checkVKRresult(err);
-#else
-		// Create Vulkan Instance without any debug feature
-		err = vkCreateInstance(&create_info, this->g_Allocator, &this->g_Instance);
-		KVK_checkVKRresult(err);
-		IM_UNUSED(this->g_DebugReport);
-#endif
+      // Get the function pointer (required for any extensions)
+      auto vkCreateDebugReportCallbackEXT = (PFN_vkCreateDebugReportCallbackEXT)vkGetInstanceProcAddr(this->g_Instance, "vkCreateDebugReportCallbackEXT");
+      IM_ASSERT(vkCreateDebugReportCallbackEXT != NULL);
+
+      // Setup the debug report callback
+      VkDebugReportCallbackCreateInfoEXT debug_report_ci = {};
+      debug_report_ci.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
+      debug_report_ci.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT | VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT;
+      debug_report_ci.pfnCallback = KVK_Vulkan_DebugReport;
+      debug_report_ci.pUserData = NULL;
+      err = vkCreateDebugReportCallbackEXT(this->g_Instance, &debug_report_ci, this->g_Allocator, &this->g_DebugReport);
+      KVK_checkVKRresult(err);
+    }
+    else {
+      // Create Vulkan Instance without any debug feature
+      err = vkCreateInstance(&create_info, this->g_Allocator, &this->g_Instance);
+      KVK_checkVKRresult(err);
+      IM_UNUSED(this->g_DebugReport);
+    }
 	}
 
   this->selectBestGPU();
@@ -561,11 +555,11 @@ void Kuplung::SetupVulkanWindow(ImGui_ImplVulkanH_Window* wd, VkSurfaceKHR surfa
 void Kuplung::CleanupVulkan() {
 	vkDestroyDescriptorPool(this->g_Device, this->g_DescriptorPool, this->g_Allocator);
 
-#ifdef IMGUI_VULKAN_DEBUG_REPORT
-	// Remove the debug report callback
-	auto vkDestroyDebugReportCallbackEXT = (PFN_vkDestroyDebugReportCallbackEXT)vkGetInstanceProcAddr(this->g_Instance, "vkDestroyDebugReportCallbackEXT");
-	vkDestroyDebugReportCallbackEXT(this->g_Instance, this->g_DebugReport, this->g_Allocator);
-#endif // IMGUI_VULKAN_DEBUG_REPORT
+  if (Settings::Instance()->VulkanDebugMode) {
+    // Remove the debug report callback
+    auto vkDestroyDebugReportCallbackEXT = (PFN_vkDestroyDebugReportCallbackEXT)vkGetInstanceProcAddr(this->g_Instance, "vkDestroyDebugReportCallbackEXT");
+    vkDestroyDebugReportCallbackEXT(this->g_Instance, this->g_DebugReport, this->g_Allocator);
+  }
 
 	vkDestroyDevice(this->g_Device, this->g_Allocator);
 	vkDestroyInstance(this->g_Instance, this->g_Allocator);

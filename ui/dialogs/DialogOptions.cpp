@@ -57,6 +57,7 @@ void DialogOptions::showOptionsWindow(ImGuiStyle* ref, DialogStyle* wStyle, bool
         ))
       Settings::Instance()->saveSettings();
 
+    ImGui::Checkbox("Enable Vulkan Debug", &Settings::Instance()->VulkanDebugMode);
     ImGui::PopItemWidth();
     ImGui::Unindent();
   }

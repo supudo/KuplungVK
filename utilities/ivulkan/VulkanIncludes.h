@@ -23,10 +23,6 @@
 #include <SDL2/SDL_vulkan.h>
 #include <vulkan/vulkan.hpp>
 
-#ifdef KVK_VulkanDebug
-#define IMGUI_VULKAN_DEBUG_REPORT
-#endif
-
 #include "../../settings/Settings.h"
 
 static void KVK_checkVKRresult(VkResult err) {
@@ -35,6 +31,12 @@ static void KVK_checkVKRresult(VkResult err) {
   Settings::Instance()->funcDoLog(Settings::Instance()->string_format("VkResult %d\n", err));
 	if (err < 0)
 		abort();
+}
+
+static VKAPI_ATTR VkBool32 VKAPI_CALL KVK_Vulkan_DebugReport(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType, uint64_t object, size_t location, int32_t messageCode, const char* pLayerPrefix, const char* pMessage, void* pUserData) {
+  (void)flags; (void)object; (void)location; (void)messageCode; (void)pUserData; (void)pLayerPrefix; // Unused arguments
+  fprintf(stderr, "[KuplungVK] ObjectType: %i\nMessage: %s\n\n", objectType, pMessage);
+  return VK_FALSE;
 }
 
 #endif /* VulkanIncludes_h */

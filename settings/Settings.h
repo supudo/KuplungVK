@@ -30,6 +30,7 @@ public:
   int SelectedGPU;
   int Consumption_Interval_CPU, Consumption_Interval_Memory;
   std::vector<std::string> AvailableGPUs;
+  bool VulkanDebugMode;
 
   int UIFontFileIndex;
   float UIFontSize;
