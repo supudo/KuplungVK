@@ -156,7 +156,7 @@ void Settings::setLogFunc(const std::function<void(std::string)>& doLog) {
 	this->funcDoLog = doLog;
 }
 
-std::string Settings::prettyBbytes(uint64_t bytes) {
+const std::string Settings::prettyBbytes(uint64_t bytes) const {
   const char* suffixes[7];
   suffixes[0] = "B";
   suffixes[1] = "KB";
@@ -176,3 +176,10 @@ std::string Settings::prettyBbytes(uint64_t bytes) {
   else
     return Settings::Instance()->string_format("%.1f %s", count, suffixes[s]);
 }
+
+void Settings::logTimings(const std::string& file, const std::string& method) {
+#ifdef Kuplung_Debug_Timings
+  Settings::Instance()->funcDoLog(Settings::Instance()->string_format("[TIMINGS] [%s - %s] : %f seconds.", file.c_str(), method.c_str(), (1.0 * std::clock() / CLOCKS_PER_SEC)));
+#endif
+}
+

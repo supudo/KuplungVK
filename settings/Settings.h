@@ -17,7 +17,8 @@ public:
 	void saveSettings();
 	std::string appFolder();
 	void setLogFunc(const std::function<void(std::string)>& doLog);
-  std::string prettyBbytes(uint64_t bytes);
+  const std::string prettyBbytes(uint64_t bytes) const;
+  void logTimings(const std::string& file, const std::string& method);
 
 	std::function<void(std::string)> funcDoLog;
 

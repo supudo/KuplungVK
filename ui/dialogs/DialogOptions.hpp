@@ -10,7 +10,7 @@ class DialogOptions {
 public:
   void init();
   void showOptionsWindow(ImGuiStyle* ref, DialogStyle* wStyle, bool* p_opened = NULL, bool* needsFontChange = NULL);
-  void loadFonts(bool* needsFontChange = NULL);
+  void loadFonts(bool* needsFontChange = NULL) const;
 
 private:
   std::unique_ptr<FontsList> fontLister;

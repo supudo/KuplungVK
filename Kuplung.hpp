@@ -44,8 +44,8 @@ private:
   void SetupVulkanWindow(ImGui_ImplVulkanH_Window* wd, VkSurfaceKHR surface, int width, int height);
   void CleanupVulkan();
   void CleanupVulkanWindow();
-  void FrameRender(ImGui_ImplVulkanH_Window* wd);
-  void FramePresent(ImGui_ImplVulkanH_Window* wd);
+  void FrameRender(ImGui_ImplVulkanH_Window* wd) const;
+  void FramePresent(ImGui_ImplVulkanH_Window* wd) const;
 
   void renderScene();
 

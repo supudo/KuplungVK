@@ -212,6 +212,8 @@ bool Kuplung::init() {
   this->managerRendering = std::make_unique<RenderingManager>();
   this->managerRendering->init();
 
+  Settings::Instance()->logTimings(__FILE__, __func__);
+
   return true;
 }
 
@@ -329,6 +331,8 @@ void Kuplung::initFolders() {
   if (Settings::Instance()->currentFolder.empty())
     Settings::Instance()->currentFolder = homeFolder;
   Settings::Instance()->initSettings(iniFolder);
+
+  Settings::Instance()->logTimings(__FILE__, __func__);
 }
 
 void Kuplung::selectBestGPU() {
@@ -387,6 +391,8 @@ void Kuplung::selectBestGPU() {
   // for sake of simplicity we'll just take the first one, assuming it has a graphics queue family.
   this->g_PhysicalDevice = gpus[Settings::Instance()->SelectedGPU];
   free(gpus);
+
+  Settings::Instance()->logTimings(__FILE__, __func__);
 }
 
 void Kuplung::SetupVulkan(const char** extensions, uint32_t extensions_count) {
@@ -518,6 +524,8 @@ void Kuplung::SetupVulkan(const char** extensions, uint32_t extensions_count) {
 		err = vkCreateDescriptorPool(this->g_Device, &pool_info, this->g_Allocator, &this->g_DescriptorPool);
 		KVK_checkVKRresult(err);
 	}
+
+  Settings::Instance()->logTimings(__FILE__, __func__);
 }
 
 // All the ImGui_ImplVulkanH_XXX structures/functions are optional helpers used by the demo.
@@ -550,6 +558,8 @@ void Kuplung::SetupVulkanWindow(ImGui_ImplVulkanH_Window* wd, VkSurfaceKHR surfa
 	// Create SwapChain, RenderPass, Framebuffer, etc.
 	IM_ASSERT(this->g_MinImageCount >= 2);
 	ImGui_ImplVulkanH_CreateWindow(this->g_Instance, this->g_PhysicalDevice, this->g_Device, wd, this->g_QueueFamily, this->g_Allocator, width, height, this->g_MinImageCount);
+
+  Settings::Instance()->logTimings(__FILE__, __func__);
 }
 
 void Kuplung::CleanupVulkan() {
@@ -563,13 +573,17 @@ void Kuplung::CleanupVulkan() {
 
 	vkDestroyDevice(this->g_Device, this->g_Allocator);
 	vkDestroyInstance(this->g_Instance, this->g_Allocator);
+
+  Settings::Instance()->logTimings(__FILE__, __func__);
 }
 
 void Kuplung::CleanupVulkanWindow() {
 	ImGui_ImplVulkanH_DestroyWindow(this->g_Instance, this->g_Device, &this->g_MainWindowData, this->g_Allocator);
+
+  Settings::Instance()->logTimings(__FILE__, __func__);
 }
 
-void Kuplung::FrameRender(ImGui_ImplVulkanH_Window* wd) {
+void Kuplung::FrameRender(ImGui_ImplVulkanH_Window* wd) const {
 	VkResult err;
 
 	VkSemaphore image_acquired_semaphore = wd->FrameSemaphores[wd->SemaphoreIndex].ImageAcquiredSemaphore;
@@ -630,7 +644,7 @@ void Kuplung::FrameRender(ImGui_ImplVulkanH_Window* wd) {
 	}
 }
 
-void Kuplung::FramePresent(ImGui_ImplVulkanH_Window* wd) {
+void Kuplung::FramePresent(ImGui_ImplVulkanH_Window* wd) const {
 	VkSemaphore render_complete_semaphore = wd->FrameSemaphores[wd->SemaphoreIndex].RenderCompleteSemaphore;
 	VkPresentInfoKHR info = {};
 	info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;

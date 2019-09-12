@@ -284,7 +284,7 @@ void ConfigUtils::readFile() {
   }
 }
 
-std::vector<std::string> ConfigUtils::splitString(const std::string& s, std::regex const& delimiter) {
+const std::vector<std::string> ConfigUtils::splitString(const std::string& s, std::regex const& delimiter) const {
   std::vector<std::string> elements;
   std::sregex_token_iterator iter(s.begin(), s.end(), delimiter, -1);
   std::sregex_token_iterator end;

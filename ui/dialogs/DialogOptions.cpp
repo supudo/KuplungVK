@@ -193,7 +193,7 @@ void DialogOptions::showOptionsWindow(ImGuiStyle* ref, DialogStyle* wStyle, bool
   ImGui::End();
 }
 
-void DialogOptions::loadFonts(bool* needsFontChange) {
+void DialogOptions::loadFonts(bool* needsFontChange) const {
   ImGuiIO& io = ImGui::GetIO();
 
   io.Fonts->Clear();
