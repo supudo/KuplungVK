@@ -28,7 +28,7 @@ public:
 	int SDL_Window_Width, SDL_Window_Height;
 	int frameLog_Width, frameLog_Height;
 
-  int SelectedGPU;
+  unsigned int SelectedGPU;
   int Consumption_Interval_CPU, Consumption_Interval_Memory;
   std::vector<std::string> AvailableGPUs;
   bool VulkanDebugMode;
