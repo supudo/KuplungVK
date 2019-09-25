@@ -53,8 +53,8 @@ void DialogOptions::showOptionsWindow(ImGuiStyle* ref, DialogStyle* wStyle, bool
         return true;
       },
       static_cast<void*>(&Settings::Instance()->AvailableGPUs),
-        Settings::Instance()->AvailableGPUs.size()
-        ))
+      (int)Settings::Instance()->AvailableGPUs.size()
+      ))
       Settings::Instance()->saveSettings();
 
     ImGui::Checkbox("Enable Vulkan Debug", &Settings::Instance()->VulkanDebugMode);
